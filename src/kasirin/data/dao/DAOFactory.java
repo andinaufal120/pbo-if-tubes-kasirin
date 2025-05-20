@@ -1,5 +1,7 @@
 package kasirin.data.dao;
 
+import kasirin.data.model.*;
+
 /// Provides abstract DAO factory object that can construct one or more types of concrete DAO factories,
 /// e.g. MySQL DAO factory.
 ///

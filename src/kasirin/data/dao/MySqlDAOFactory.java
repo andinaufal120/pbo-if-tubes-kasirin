@@ -1,5 +1,7 @@
 package kasirin.data.dao;
 
+import kasirin.data.model.*;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
