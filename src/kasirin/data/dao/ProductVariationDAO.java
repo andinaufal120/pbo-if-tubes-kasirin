@@ -1,4 +1,4 @@
-package kasirin.data.model;
+package kasirin.data.dao;
 
 public interface ProductVariationDAO {
 }
