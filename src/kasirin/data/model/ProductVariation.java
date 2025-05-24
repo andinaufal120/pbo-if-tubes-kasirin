@@ -4,4 +4,84 @@ package kasirin.data.model;
 ///
 /// @author yamaym
 public class ProductVariation {
+    /* Instance fields */
+    private int id; // primary key
+    private int productId; // foreign key
+    private String type;
+    private String value;
+    private int stocks;
+    private double additionalPrice;
+
+    /* Constructor */
+    public ProductVariation(int productId, String type, String value, double additionalPrice) {
+        this(productId, type, value, 0, additionalPrice);
+    }
+
+    public ProductVariation(int productId, String type, String value, int stocks, double additionalPrice) {
+        this.setProductId(productId);
+        this.setType(type);
+        this.setValue(value);
+        this.setStocks(stocks);
+        this.setAdditionalPrice(additionalPrice);
+    }
+
+    /* Getters and setters */
+    public int getId() {
+        return id;
+    }
+
+    /// NOTE: Attempt to change Product Variation ID should not be applied to datasource.
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public int getStocks() {
+        return stocks;
+    }
+
+    public void setStocks(int stocks) {
+        this.stocks = stocks;
+    }
+
+    public int incrementStocks(int amount) {
+        this.stocks += amount;
+        return this.stocks;
+    }
+
+    public int decrementStocks(int amount) {
+        this.stocks -= amount;
+        return this.stocks;
+    }
+
+    public double getAdditionalPrice() {
+        return additionalPrice;
+    }
+
+    public void setAdditionalPrice(double additionalPrice) {
+        this.additionalPrice = additionalPrice;
+    }
 }
