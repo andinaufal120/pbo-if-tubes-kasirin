@@ -1,6 +1,6 @@
 package kasirin.data.model;
 
-/// Data Transfer Object used by DAO as data carrier to exchange data with client.
+/// Transfer Object used by "Transaction" DAO to send/receive data from client.
 ///
 /// @author yamaym
 public class Transaction {
