@@ -6,7 +6,7 @@ package kasirin.data.model;
 public class Product {
     /* Instance fields */
     private int id; // primary key
-    private int categoryID; // foreign key
+    private String category; // foreign key
     private int storeID; // foreign key
     private String name;
     private double basePrice;
@@ -14,15 +14,15 @@ public class Product {
     private String imageURL;
 
     /* Constructors */
-    public Product(int categoryID, int storeID, String name, double basePrice) {
-        this.setCategoryID(categoryID);
+    public Product(String category, int storeID, String name, double basePrice) {
+        this.setCategory(category);
         this.setStoreID(storeID);
         this.setName(name);
         this.setBasePrice(basePrice);
     }
 
-    public Product(int categoryID, int storeID, String name, double basePrice, String description, String imageURL) {
-        this.setCategoryID(categoryID);
+    public Product(String category, int storeID, String name, double basePrice, String description, String imageURL) {
+        this.setCategory(category);
         this.setStoreID(storeID);
         this.setName(name);
         this.setBasePrice(basePrice);
@@ -40,12 +40,12 @@ public class Product {
         this.id = id;
     }
 
-    public int getCategoryID() {
-        return categoryID;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public int getStoreID() {
