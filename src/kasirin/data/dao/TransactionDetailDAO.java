@@ -16,7 +16,7 @@ public interface TransactionDetailDAO {
     ///
     /// @param id transaction detail ID to search
     /// @return "Transaction Detail" transfer object
-    public int findTransactionDetail(int id);
+    public TransactionDetail findTransactionDetail(int id);
 
     /// Updates an existing transaction detail in datasource.
     ///

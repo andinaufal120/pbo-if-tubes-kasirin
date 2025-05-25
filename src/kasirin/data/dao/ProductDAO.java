@@ -16,7 +16,7 @@ public interface ProductDAO {
     ///
     /// @param id product ID to search
     /// @return "Product" transfer object
-    public int findProduct(int id);
+    public Product findProduct(int id);
 
     /// Updates an existing product in datasource.
     ///

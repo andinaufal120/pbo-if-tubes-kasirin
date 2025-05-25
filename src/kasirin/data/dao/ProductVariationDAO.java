@@ -16,7 +16,7 @@ public interface ProductVariationDAO {
     ///
     /// @param id product variation ID to search
     /// @return "Product Variation" transfer object
-    public int findProductVariation(int id);
+    public ProductVariation findProductVariation(int id);
 
     /// Updates an existing product variation in datasource.
     ///

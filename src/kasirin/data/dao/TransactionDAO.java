@@ -16,7 +16,7 @@ public interface TransactionDAO {
     ///
     /// @param id transaction ID to search
     /// @return "Transaction" transfer object
-    public int findTransaction(int id);
+    public Transaction findTransaction(int id);
 
     /// Updates an existing transaction in datasource.
     ///

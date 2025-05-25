@@ -16,7 +16,7 @@ public interface UserDAO {
     ///
     /// @param id user ID to search
     /// @return "Transaction" transfer object
-    public int findUser(int id);
+    public User findUser(int id);
 
     /// Updates an existing user in datasource.
     ///

@@ -16,7 +16,7 @@ public interface StoreDAO {
     ///
     /// @param id store ID to search
     /// @return "Store" transfer object
-    public int findStore(int id);
+    public Store findStore(int id);
 
     /// Updates an existing store in datasource.
     ///
