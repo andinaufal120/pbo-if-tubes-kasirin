@@ -64,8 +64,8 @@ public class MySqlProductDAO implements ProductDAO {
     }
 
     @Override
-    public boolean updateProduct(int id, Product product) {
-        boolean result = false;
+    public int updateProduct(int id, Product product) {
+        int result = -1;
 
         String query = "UPDATE products SET store_id=?,name=?,category=?,base_price=?,description=?,image_url=? WHERE id=?";
         try (PreparedStatement pstmt = conn.prepareStatement(query)){
@@ -76,26 +76,24 @@ public class MySqlProductDAO implements ProductDAO {
             pstmt.setString(5,product.getDescription());
             pstmt.setString(6,product.getImageURL());
             pstmt.setInt(7,id);
-            pstmt.executeUpdate();
-            result = true;
+            result = pstmt.executeUpdate(); // number of affected rows
         } catch (Exception e) {
             System.out.println("Error in updating product: " + e.getMessage());
         }
-        return result; // return true on success, return false on failure
+        return result; // return the number of affected rows on success, return -1 on failure
     }
 
     @Override
-    public boolean deleteProduct(int id) {
-        boolean result = false;
+    public int deleteProduct(int id) {
+        int result = -1;
 
         String query = "DELETE FROM products WHERE id=?";
         try (PreparedStatement pstmt = conn.prepareStatement(query)){
             pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            result = true;
+            result = pstmt.executeUpdate(); // number of affected rows
         } catch (Exception e) {
             System.out.println("Error in deleting product: " + e.getMessage());
         }
-        return result;
+        return result; // return the number of affected rows on success, return -1 on failure
     }
 }

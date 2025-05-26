@@ -22,12 +22,12 @@ public interface StoreDAO {
     ///
     /// @param id    store ID to update
     /// @param store "Store" transfer object with updated fields
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int updateStore(int id, Store store);
 
     /// Deletes an existing store in datasource.
     ///
     /// @param id store ID to be deleted
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int deleteStore(int id);
 }
