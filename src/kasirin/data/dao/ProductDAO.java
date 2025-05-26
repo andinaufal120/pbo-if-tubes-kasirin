@@ -22,12 +22,12 @@ public interface ProductDAO {
     ///
     /// @param id      product ID to update
     /// @param product "Product" transfer object with updated fields
-    /// @return {@code true} on success, {@code false} on error
-    public boolean updateProduct(int id, Product product);
+    /// @return number of affected rows or a {@code -1} on error
+    public int updateProduct(int id, Product product);
 
     /// Deletes an existing product in datasource.
     ///
     /// @param id product ID to be deleted
-    /// @return {@code true} on success, {@code false} on error
-    public boolean deleteProduct(int id);
+    /// @return number of affected rows or a {@code -1} on error
+    public int deleteProduct(int id);
 }

@@ -22,12 +22,12 @@ public interface TransactionDAO {
     ///
     /// @param id          transaction ID to update
     /// @param transaction "Transaction" transfer object with updated fields
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int updateTransaction(int id, Transaction transaction);
 
     /// Deletes an existing transaction in datasource.
     ///
     /// @param id transaction ID to be deleted
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int deleteTransaction(int id);
 }

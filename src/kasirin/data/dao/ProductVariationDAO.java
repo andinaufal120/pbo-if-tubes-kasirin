@@ -22,12 +22,12 @@ public interface ProductVariationDAO {
     ///
     /// @param id               product variation ID to update
     /// @param productVariation "Product Variation" transfer object with updated fields
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int updateProductVariation(int id, ProductVariation productVariation);
 
     /// Deletes an existing product variation in datasource.
     ///
     /// @param id product variation ID to be deleted
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int deleteProductVariation(int id);
 }

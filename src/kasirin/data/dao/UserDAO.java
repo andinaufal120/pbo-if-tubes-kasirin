@@ -22,12 +22,12 @@ public interface UserDAO {
     ///
     /// @param id   user ID to update
     /// @param user "User" transfer object with updated fields
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int updateUser(int id, User user);
 
     /// Deletes an existing user in datasource.
     ///
     /// @param id user ID to be deleted
-    /// @return {@code true} on success, {@code false} on error
+    /// @return number of affected rows or a {@code -1} on error
     public int deleteUser(int id);
 }
