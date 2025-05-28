@@ -9,25 +9,22 @@ public class Transaction {
     /* Instance fields */
     private int id; // primary key
     private int storeID; // foreign key
-    private String action;
-    private String description;
+    private int userID; // foreign key
+    private Timestamp timestamp;
     private double total;
-    private Timestamp timestamp; // TODO: data type must be checked again.
 
-    /* Constructor */
-    public Transaction(int storeID, String action, String description, double total, Timestamp timestamp) {
+    public Transaction(int storeID, int userID, Timestamp timestamp, double total) {
         this.setStoreID(storeID);
-        this.setAction(action);
-        this.setDescription(description);
-        this.setTotal(total);
+        this.setUserID(userID);
         this.setTimestamp(timestamp);
+        this.setTotal(total);
     }
 
-    /* Getters and setters */
     public int getId() {
         return id;
     }
 
+    /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
     }
@@ -40,28 +37,12 @@ public class Transaction {
         this.storeID = storeID;
     }
 
-    public String getAction() {
-        return action;
+    public int getUserID() {
+        return userID;
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
     public Timestamp getTimestamp() {
@@ -70,5 +51,13 @@ public class Transaction {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 }

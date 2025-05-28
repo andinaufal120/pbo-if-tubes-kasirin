@@ -5,24 +5,25 @@ package kasirin.data.model;
 /// @author yamaym
 public class User {
     /* Instance fields */
-    private int id;
-    private int storeID;
+    private int id; // primary key
+    private int storeID; // foreign key
+    private String name;
     private String username;
     private String password;
-    enum role {/* what roles do we have? */}
+    private Role role;
 
-    /* Constructor */
-    public User(int storeID, String username, String password) {
+    public User(int storeID, String name, String username, String password) {
         this.setStoreID(storeID);
+        this.setName(name);
         this.setUsername(username);
         this.setPassword(password);
     }
 
-    /* Getters and setters */
     public int getId() {
         return id;
     }
 
+    /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
     }
@@ -33,6 +34,14 @@ public class User {
 
     public void setStoreID(int storeID) {
         this.storeID = storeID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUsername() {
@@ -51,4 +60,11 @@ public class User {
         this.password = password;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

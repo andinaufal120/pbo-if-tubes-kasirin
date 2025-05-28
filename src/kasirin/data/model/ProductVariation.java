@@ -14,10 +14,10 @@ public class ProductVariation {
 
     /* Constructor */
     public ProductVariation(int productId, String type, String value, double additionalPrice) {
-        this(productId, type, value, 0, additionalPrice);
+        this(productId, type, value, additionalPrice, 0);
     }
 
-    public ProductVariation(int productId, String type, String value, int stocks, double additionalPrice) {
+    public ProductVariation(int productId, String type, String value, double additionalPrice, int stocks) {
         this.setProductId(productId);
         this.setType(type);
         this.setValue(value);
@@ -30,7 +30,7 @@ public class ProductVariation {
         return id;
     }
 
-    /// NOTE: Attempt to change Product Variation ID should not be applied to datasource.
+    /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
     }
