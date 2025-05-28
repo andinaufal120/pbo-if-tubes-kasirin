@@ -14,10 +14,10 @@ public class ProductVariation {
 
     /* Constructor */
     public ProductVariation(int productId, String type, String value, double additionalPrice) {
-        this(productId, type, value, 0, additionalPrice);
+        this(productId, type, value, additionalPrice, 0);
     }
 
-    public ProductVariation(int productId, String type, String value, int stocks, double additionalPrice) {
+    public ProductVariation(int productId, String type, String value, double additionalPrice, int stocks) {
         this.setProductId(productId);
         this.setType(type);
         this.setValue(value);
