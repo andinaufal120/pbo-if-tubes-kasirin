@@ -10,7 +10,6 @@ public class User {
     private String name;
     private String username;
     private String password;
-    enum role {/* what roles do we have? */}
 
     public User(int storeID, String name, String username, String password) {
         this.setStoreID(storeID);
