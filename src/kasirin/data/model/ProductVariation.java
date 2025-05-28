@@ -30,7 +30,7 @@ public class ProductVariation {
         return id;
     }
 
-    /// NOTE: Attempt to change Product Variation ID should not be applied to datasource.
+    /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
     }

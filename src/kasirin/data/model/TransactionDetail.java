@@ -24,6 +24,7 @@ public class TransactionDetail {
         return id;
     }
 
+    /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
     }
