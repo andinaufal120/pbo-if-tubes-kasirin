@@ -6,46 +6,36 @@ package kasirin.data.model;
 public class Product {
     /* Instance fields */
     private int id; // primary key
-    private String category; // foreign key
     private int storeID; // foreign key
     private String name;
+    private String category;
     private double basePrice;
     private String description;
     private String imageURL;
 
-    /* Constructors */
-    public Product(String category, int storeID, String name, double basePrice) {
-        this.setCategory(category);
-        this.setStoreID(storeID);
+    public Product(String name, int storeID, String category, double basePrice) {
         this.setName(name);
+        this.setStoreID(storeID);
+        this.setCategory(category);
         this.setBasePrice(basePrice);
     }
 
-    public Product(String category, int storeID, String name, double basePrice, String description, String imageURL) {
-        this.setCategory(category);
-        this.setStoreID(storeID);
+    public Product(String name, int storeID, String category, double basePrice, String description, String imageURL) {
         this.setName(name);
+        this.setStoreID(storeID);
+        this.setCategory(category);
         this.setBasePrice(basePrice);
         this.setDescription(description);
         this.setImageURL(imageURL);
     }
 
-    /* Getters and setters */
     public int getId() {
         return id;
     }
 
-    /// NOTE: Attempt to change Product ID should not be applied to datasource.
+    /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
     }
 
     public int getStoreID() {
@@ -62,6 +52,14 @@ public class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public double getBasePrice() {
