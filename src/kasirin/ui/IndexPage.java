@@ -34,129 +34,123 @@ public class IndexPage extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    /// Inisialisasi semua komponen UI dengan styling modern
+    /// Inisialisasi semua komponen UI dengan desain modern yang lebih menarik
     private void initializeComponents() {
-        // Label selamat datang dengan nama user
+        // Label selamat datang dengan typography yang lebih baik
         welcomeLabel = new JLabel("Selamat Datang di Kasirin!");
-        welcomeLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
-        welcomeLabel.setForeground(new Color(31, 41, 55)); // Gray-800
+        welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
+        welcomeLabel.setForeground(new Color(17, 24, 39));
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Label informasi user yang sedang login
+        // Label informasi user dengan styling yang lebih soft
         String userInfo = String.format("Masuk sebagai: %s (%s) - Role: %s",
                 currentUser.getName(),
                 currentUser.getUsername(),
                 currentUser.getRole().getValue().toUpperCase()
         );
         userInfoLabel = new JLabel(userInfo);
-        userInfoLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        userInfoLabel.setForeground(new Color(107, 114, 128)); // Gray-500
+        userInfoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        userInfoLabel.setForeground(new Color(107, 114, 128));
         userInfoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Panel untuk menu utama
-        menuPanel = new JPanel(new GridLayout(2, 3, 20, 20));
-        menuPanel.setBackground(Color.WHITE);
-        menuPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        // Panel untuk menu dengan grid yang lebih responsif
+        menuPanel = new JPanel(new GridLayout(2, 3, 25, 25));
+        menuPanel.setOpaque(false);
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        // Tombol logout di header
-        logoutButton = new JButton("Keluar");
-        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        logoutButton.setBackground(new Color(239, 68, 68)); // Red-500
+        // Tombol logout dengan desain modern
+        logoutButton = new JButton("Keluar") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Gradien merah untuk logout
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(239, 68, 68),
+                        0, getHeight(), new Color(220, 38, 38)
+                );
+                g2.setPaint(gradient);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        logoutButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         logoutButton.setForeground(Color.WHITE);
-        logoutButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        logoutButton.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
         logoutButton.setFocusPainted(false);
+        logoutButton.setContentAreaFilled(false);
         logoutButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Buat menu cards berdasarkan role user
-        createMenuCards();
+
     }
 
-    /// Membuat kartu menu berdasarkan role user
-    private void createMenuCards() {
-        // Menu yang tersedia untuk semua role
-        addMenuCard("Produk", "Kelola produk dan variasi", new Color(59, 130, 246), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openProductManagement();
-            }
-        });
-
-        addMenuCard("Transaksi", "Proses penjualan dan kasir", new Color(34, 197, 94), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openTransactionManagement();
-            }
-        });
-
-        addMenuCard("Laporan", "Lihat laporan penjualan", new Color(168, 85, 247), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openReports();
-            }
-        });
-
-        // Menu khusus untuk admin dan owner
-        if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.OWNER) {
-            addMenuCard("Pengguna", "Kelola akun pengguna", new Color(245, 158, 11), new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    openUserManagement();
-                }
-            });
-
-            addMenuCard("Toko", "Kelola informasi toko", new Color(239, 68, 68), new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    openStoreManagement();
-                }
-            });
-        }
-
-        // Menu pengaturan untuk semua user
-        addMenuCard("Pengaturan", "Pengaturan akun dan aplikasi", new Color(107, 114, 128), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openSettings();
-            }
-        });
-    }
-
-    /// Helper method untuk membuat kartu menu dengan styling konsisten
+    /// Helper method untuk membuat kartu menu dengan desain modern dan shadow
     private void addMenuCard(String title, String description, Color bgColor, ActionListener action) {
-        // Panel utama kartu
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(bgColor);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0, 0, 0, 20), 1),
-                BorderFactory.createEmptyBorder(30, 25, 30, 25)
-        ));
-        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // Panel utama kartu dengan shadow dan rounded corners
+        JPanel card = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Panel konten dengan layout vertikal
+                // Shadow effect dengan multiple layers
+                g2.setColor(new Color(0, 0, 0, 15));
+                g2.fillRoundRect(6, 6, getWidth()-6, getHeight()-6, 16, 16);
+                g2.setColor(new Color(0, 0, 0, 10));
+                g2.fillRoundRect(4, 4, getWidth()-4, getHeight()-4, 16, 16);
+                g2.setColor(new Color(0, 0, 0, 5));
+                g2.fillRoundRect(2, 2, getWidth()-2, getHeight()-2, 16, 16);
+
+                // Gradien background untuk kartu
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, bgColor,
+                        0, getHeight(), bgColor.darker()
+                );
+                g2.setPaint(gradient);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
+
+                g2.dispose();
+            }
+        };
+        card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        card.setBorder(BorderFactory.createEmptyBorder(35, 30, 35, 30));
+
+        // Panel konten dengan layout yang lebih baik
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBackground(bgColor);
+        contentPanel.setOpaque(false);
 
-        // Judul kartu
+        // Ikon placeholder (bisa diganti dengan ikon sesungguhnya)
+        JLabel iconLabel = new JLabel("●");
+        iconLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        iconLabel.setForeground(new Color(255, 255, 255, 180));
+        iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Judul kartu dengan typography yang lebih baik
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Deskripsi kartu
-        JLabel descLabel = new JLabel("<html><center>" + description + "</center></html>");
-        descLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        // Deskripsi dengan line height yang lebih baik
+        JLabel descLabel = new JLabel("<html><div style='text-align: center; line-height: 1.4;'>" + description + "</div></html>");
+        descLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         descLabel.setForeground(new Color(255, 255, 255, 200));
         descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Tambahkan komponen ke panel konten
+        // Tambahkan komponen dengan spacing yang optimal
+        contentPanel.add(iconLabel);
+        contentPanel.add(Box.createVerticalStrut(12));
         contentPanel.add(titleLabel);
-        contentPanel.add(Box.createVerticalStrut(10));
+        contentPanel.add(Box.createVerticalStrut(8));
         contentPanel.add(descLabel);
 
         card.add(contentPanel, BorderLayout.CENTER);
 
-        // Event handler untuk klik kartu
+        // Event handler dengan efek hover yang lebih smooth
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -165,42 +159,72 @@ public class IndexPage extends JFrame {
 
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                // Efek hover - sedikit lebih gelap
-                card.setBackground(bgColor.darker());
-                contentPanel.setBackground(bgColor.darker());
+                // Efek hover dengan transformasi subtle
+                card.setBorder(BorderFactory.createEmptyBorder(32, 27, 38, 33));
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                // Kembalikan warna asli
-                card.setBackground(bgColor);
-                contentPanel.setBackground(bgColor);
+                // Kembalikan ke ukuran normal
+                card.setBorder(BorderFactory.createEmptyBorder(35, 30, 35, 30));
             }
         });
 
         menuPanel.add(card);
     }
 
-    /// Setup layout utama aplikasi
+    /// Setup layout utama aplikasi dengan desain yang lebih modern
     private void setupLayout() {
         setLayout(new BorderLayout());
 
-        // Header panel dengan informasi user dan tombol logout
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(229, 231, 235)),
-                BorderFactory.createEmptyBorder(20, 30, 20, 30)
-        ));
+        // Background dengan gradien yang lebih halus
+        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Gradien background yang lebih sophisticated
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(248, 250, 252),
+                        0, getHeight(), new Color(241, 245, 249)
+                );
+                g2.setPaint(gradient);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+
+        // Header panel dengan desain yang lebih modern
+        JPanel headerPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Background putih dengan shadow halus
+                g2.setColor(Color.WHITE);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+
+                // Shadow di bagian bawah header
+                g2.setColor(new Color(0, 0, 0, 8));
+                g2.fillRect(0, getHeight()-2, getWidth(), 2);
+                g2.setColor(new Color(0, 0, 0, 4));
+                g2.fillRect(0, getHeight()-1, getWidth(), 1);
+
+                g2.dispose();
+            }
+        };
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
 
         // Panel kiri header dengan info user
         JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        userInfoPanel.setBackground(Color.WHITE);
+        userInfoPanel.setOpaque(false);
         userInfoPanel.add(userInfoLabel);
 
         // Panel kanan header dengan tombol logout
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        logoutPanel.setBackground(Color.WHITE);
+        logoutPanel.setOpaque(false);
         logoutPanel.add(logoutButton);
 
         headerPanel.add(userInfoPanel, BorderLayout.WEST);
@@ -208,19 +232,20 @@ public class IndexPage extends JFrame {
 
         // Panel utama dengan welcome message dan menu
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(249, 250, 251)); // Gray-50
+        mainPanel.setOpaque(false);
 
-        // Panel welcome dengan padding
+        // Panel welcome dengan spacing yang lebih baik
         JPanel welcomePanel = new JPanel(new BorderLayout());
-        welcomePanel.setBackground(new Color(249, 250, 251));
-        welcomePanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
+        welcomePanel.setOpaque(false);
+        welcomePanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 30, 0));
         welcomePanel.add(welcomeLabel, BorderLayout.CENTER);
 
         // Tambahkan komponen ke layout utama
-        add(headerPanel, BorderLayout.NORTH);
+        backgroundPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(welcomePanel, BorderLayout.NORTH);
         mainPanel.add(menuPanel, BorderLayout.CENTER);
-        add(mainPanel, BorderLayout.CENTER);
+        backgroundPanel.add(mainPanel, BorderLayout.CENTER);
+        add(backgroundPanel, BorderLayout.CENTER);
     }
 
     /// Setup event handlers untuk tombol dan menu

@@ -17,14 +17,13 @@ public class MySqlUserDAO implements UserDAO {
     @Override
     public int insertUser(User user) {
         int result = -1;
-        String query = "INSERT INTO Users (name, username, password, role) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Users (name, username, password, role) VALUES (?, ?, ?, ?)";
 
         try (PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getUsername());
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getRole().getValue());
-//            pstmt.setInt(5, user.getStoreID());
             pstmt.executeUpdate();
 
             try (ResultSet rs = pstmt.getGeneratedKeys()) {
@@ -59,14 +58,13 @@ public class MySqlUserDAO implements UserDAO {
     @Override
     public int updateUser(int id, User user) {
         int result = -1;
-        String query = "UPDATE Users SET name=?, username=?, password=?, role=?, store_id=? WHERE id=?";
+        String query = "UPDATE Users SET name=?, username=?, password=?, role=? WHERE id=?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, user.getName());
             pstmt.setString(2, user.getUsername());
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getRole().getValue());
-//            pstmt.setInt(5, user.getStoreID());
             pstmt.setInt(6, id);
             result = pstmt.executeUpdate();
         } catch (SQLException e) {

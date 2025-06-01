@@ -18,7 +18,7 @@ public class RegisterForm extends JFrame {
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JComboBox<Role> roleComboBox;
-    private JTextField storeIdField;
+
     private JButton registerButton;
     private JButton backButton;
 
@@ -45,151 +45,320 @@ public class RegisterForm extends JFrame {
         setLocationRelativeTo(parent);
     }
 
-    /// Inisialisasi semua komponen UI dengan styling modern
+    /// Inisialisasi semua komponen UI dengan styling modern yang konsisten
     private void initializeComponents() {
-        // Field nama lengkap
+        // Field nama lengkap dengan desain modern
         nameField = createStyledTextField();
 
-        // Field username
+        // Field username dengan styling yang sama
         usernameField = createStyledTextField();
 
-        // Field password
+        // Field password dengan desain yang konsisten
         passwordField = createStyledPasswordField();
 
         // Field konfirmasi password
         confirmPasswordField = createStyledPasswordField();
 
-        // ComboBox untuk role
-        roleComboBox = new JComboBox<>(Role.values());
-        roleComboBox.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        roleComboBox.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)
-        ));
+        // ComboBox untuk role dengan styling modern
+        roleComboBox = new JComboBox<>(Role.values()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Background dengan rounded corners
+                g2.setColor(new Color(249, 250, 251));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+
+                // Border
+                g2.setColor(new Color(229, 231, 235));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        roleComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        roleComboBox.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
+        roleComboBox.setBackground(new Color(249, 250, 251));
 
 
-        // Tombol register
-        registerButton = new JButton("Daftar");
-        registerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        registerButton.setBackground(new Color(34, 197, 94)); // Green-500
+
+        // Tombol register dengan gradien hijau
+        registerButton = new JButton("Daftar") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Gradien background hijau
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(34, 197, 94),
+                        0, getHeight(), new Color(22, 163, 74)
+                );
+                g2.setPaint(gradient);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        registerButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         registerButton.setForeground(Color.WHITE);
-        registerButton.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
+        registerButton.setBorder(BorderFactory.createEmptyBorder(14, 28, 14, 28));
         registerButton.setFocusPainted(false);
+        registerButton.setContentAreaFilled(false);
         registerButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Tombol kembali
-        backButton = new JButton("Kembali ke Login");
-        backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        backButton.setBackground(Color.WHITE);
-        backButton.setForeground(new Color(107, 114, 128));
-        backButton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                BorderFactory.createEmptyBorder(8, 16, 8, 16)
-        ));
+        // Tombol kembali dengan desain outline
+        backButton = new JButton("Kembali ke Login") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Background putih
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+
+                // Border abu-abu
+                g2.setColor(new Color(209, 213, 219));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        backButton.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        backButton.setForeground(new Color(75, 85, 99));
+        backButton.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
         backButton.setFocusPainted(false);
+        backButton.setContentAreaFilled(false);
         backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    /// Helper method untuk membuat text field dengan styling konsisten
+    /// Helper method untuk membuat text field dengan styling modern dan konsisten
     private JTextField createStyledTextField() {
-        JTextField field = new JTextField(20);
-        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        field.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)
-        ));
+        JTextField field = new JTextField(20) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Background dengan rounded corners
+                g2.setColor(new Color(249, 250, 251));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+
+                // Border dengan warna yang soft
+                g2.setColor(new Color(229, 231, 235));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
+        field.setBackground(new Color(249, 250, 251));
+        field.setOpaque(false);
         return field;
     }
 
-    /// Helper method untuk membuat password field dengan styling konsisten
+    /// Helper method untuk membuat password field dengan styling modern dan konsisten
     private JPasswordField createStyledPasswordField() {
-        JPasswordField field = new JPasswordField(20);
-        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        field.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)
-        ));
+        JPasswordField field = new JPasswordField(20) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Background dengan rounded corners
+                g2.setColor(new Color(249, 250, 251));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+
+                // Border dengan warna yang soft
+                g2.setColor(new Color(229, 231, 235));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
+        field.setBackground(new Color(249, 250, 251));
+        field.setOpaque(false);
         return field;
     }
 
-    /// Setup layout form dengan GridBagLayout
+    /// Setup layout form dengan desain yang lebih modern dan spacing yang optimal
     private void setupLayout() {
         setLayout(new BorderLayout());
 
-        // Panel utama dengan padding
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(Color.WHITE);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        // Background with subtle gradient
+        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Gradient background
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, new Color(255, 255, 255),
+                        0, getHeight(), new Color(248, 250, 252)
+                );
+                g2.setPaint(gradient);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+
+        // Main panel with shadow and rounded corners
+        JPanel mainPanel = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Shadow effect
+                g2.setColor(new Color(0, 0, 0, 8));
+                g2.fillRoundRect(4, 4, getWidth()-4, getHeight()-4, 16, 16);
+                g2.setColor(new Color(0, 0, 0, 4));
+                g2.fillRoundRect(2, 2, getWidth()-2, getHeight()-2, 16, 16);
+
+                // White background
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
+                g2.dispose();
+            }
+        };
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(40, 45, 40, 45));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 0, 8, 0);
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Header
+        // Title
         JLabel titleLabel = new JLabel("Daftar Akun Baru");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(31, 41, 55));
-        gbc.gridx = 0; gbc.gridy = 0;
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        titleLabel.setForeground(new Color(17, 24, 39));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 0, 20, 0);
         mainPanel.add(titleLabel, gbc);
 
-        // Reset untuk form fields
+        // Reset for form fields
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(8, 0, 3, 0);
+        gbc.insets = new Insets(5, 0, 2, 15); // Added right padding for labels
 
-        // Nama Lengkap
-        addFormField(mainPanel, gbc, "Nama Lengkap:", nameField, 1);
+        // Form fields in proper order
+        // Row 1: Name
+        JLabel nameLabel = new JLabel("Nama Lengkap");
+        nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        nameLabel.setForeground(new Color(55, 65, 81));
+        gbc.gridx = 0; gbc.gridy = 1;
+        mainPanel.add(nameLabel, gbc);
 
-        // Username
-        addFormField(mainPanel, gbc, "Username:", usernameField, 2);
+        gbc.gridx = 1; gbc.gridy = 1;
+        gbc.insets = new Insets(5, 0, 15, 0);
+        mainPanel.add(nameField, gbc);
 
-        // Password
-        addFormField(mainPanel, gbc, "Password:", passwordField, 3);
+        // Row 2: Username
+        JLabel usernameLabel = new JLabel("Username");
+        usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        usernameLabel.setForeground(new Color(55, 65, 81));
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.insets = new Insets(5, 0, 2, 15);
+        mainPanel.add(usernameLabel, gbc);
 
-        // Konfirmasi Password
-        addFormField(mainPanel, gbc, "Konfirmasi Password:", confirmPasswordField, 4);
+        gbc.gridx = 1; gbc.gridy = 2;
+        gbc.insets = new Insets(5, 0, 15, 0);
+        mainPanel.add(usernameField, gbc);
 
-        // Role
-        addFormField(mainPanel, gbc, "Role:", roleComboBox, 5);
+        // Row 3: Password
+        JLabel passwordLabel = new JLabel("Password");
+        passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        passwordLabel.setForeground(new Color(55, 65, 81));
+        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.insets = new Insets(5, 0, 2, 15);
+        mainPanel.add(passwordLabel, gbc);
 
-        // Store ID
+        gbc.gridx = 1; gbc.gridy = 3;
+        gbc.insets = new Insets(5, 0, 15, 0);
+        mainPanel.add(passwordField, gbc);
 
-        // Tombol register
-        gbc.gridy = 7;
-        gbc.gridx = 0;
-        gbc.insets = new Insets(20, 0, 10, 0);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // Row 4: Confirm Password
+        JLabel confirmPasswordLabel = new JLabel("Konfirmasi Password");
+        confirmPasswordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        confirmPasswordLabel.setForeground(new Color(55, 65, 81));
+        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.insets = new Insets(5, 0, 2, 15);
+        mainPanel.add(confirmPasswordLabel, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 4;
+        gbc.insets = new Insets(5, 0, 15, 0);
+        mainPanel.add(confirmPasswordField, gbc);
+
+        // Row 5: Role
+        JLabel roleLabel = new JLabel("Role");
+        roleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        roleLabel.setForeground(new Color(55, 65, 81));
+        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.insets = new Insets(5, 0, 2, 15);
+        mainPanel.add(roleLabel, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 5;
+        gbc.insets = new Insets(5, 0, 25, 0); // Extra bottom padding before buttons
+        mainPanel.add(roleComboBox, gbc);
+
+        // Row 6: Register Button
+        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(15, 0, 10, 0);
+        gbc.anchor = GridBagConstraints.CENTER;
         mainPanel.add(registerButton, gbc);
 
-        // Tombol kembali
-        gbc.gridy = 8;
+        // Row 7: Back Button
+        gbc.gridy = 7;
         gbc.insets = new Insets(5, 0, 0, 0);
         mainPanel.add(backButton, gbc);
 
-        add(mainPanel, BorderLayout.CENTER);
+        // Wrapper for centering
+        JPanel wrapperPanel = new JPanel(new GridBagLayout());
+        wrapperPanel.setOpaque(false);
+        wrapperPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+        wrapperPanel.add(mainPanel);
+
+        backgroundPanel.add(wrapperPanel, BorderLayout.CENTER);
+        add(backgroundPanel, BorderLayout.CENTER);
     }
 
-    /// Helper method untuk menambahkan field ke form
+    /// Helper method untuk menambahkan field ke form dengan styling yang konsisten
     private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field, int row) {
-        // Label
+        // Label dengan styling yang lebih modern
         JLabel label = new JLabel(labelText);
-        label.setFont(new Font("SansSerif", Font.BOLD, 12)); // Changed from Font.MEDIUM to Font.BOLD
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         label.setForeground(new Color(55, 65, 81));
         gbc.gridx = 0; gbc.gridy = row * 2 - 1;
         gbc.fill = GridBagConstraints.NONE;
         panel.add(label, gbc);
 
-        // Field
+        // Field dengan spacing yang optimal
         gbc.gridy = row * 2;
-        gbc.insets = new Insets(0, 0, 10, 0);
+        gbc.insets = new Insets(0, 0, 16, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(field, gbc);
 
         // Reset insets untuk label berikutnya
-        gbc.insets = new Insets(8, 0, 3, 0);
+        gbc.insets = new Insets(10, 0, 4, 0);
     }
 
     /// Setup event handlers untuk tombol dan validasi
@@ -230,7 +399,7 @@ public class RegisterForm extends JFrame {
 
         // Validasi input kosong
         if (name.isEmpty() || username.isEmpty() || password.isEmpty() ||
-                confirmPassword.isEmpty()) {
+                confirmPassword.isEmpty() ) {
             showErrorMessage("Semua field harus diisi!");
             return;
         }
@@ -249,7 +418,6 @@ public class RegisterForm extends JFrame {
             return;
         }
 
-        // Validasi store ID adalah angka
 
 
         try {
