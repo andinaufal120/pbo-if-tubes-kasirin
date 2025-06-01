@@ -10,9 +10,9 @@ import java.sql.SQLException;
 /// @author yamaym
 public class MySqlDAOFactory extends DAOFactory {
     // Static fields
-    public static final String DBURL = "jdbc:mysql://localhost:3306/database_name";
-    public static final String USERNAME = "test";
-    public static final String PASSWORD = "ngapainpakepassword";
+    public static final String DBURL = "jdbc:mysql://localhost:3306/db_kasir";
+    public static final String USERNAME = "root";
+    public static final String PASSWORD = "";
 
     // Static method
 
