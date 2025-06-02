@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.ProductVariation;
 
+import java.util.List;
+
 public class MySqlProductVariationDAO implements ProductVariationDAO {
     @Override
     public int insertProductVariation(ProductVariation productVariation) {
@@ -21,5 +23,10 @@ public class MySqlProductVariationDAO implements ProductVariationDAO {
     @Override
     public int deleteProductVariation(int id) {
         return 0;
+    }
+
+    @Override
+    public List<ProductVariation> findAllProductVariations() {
+        return List.of();
     }
 }

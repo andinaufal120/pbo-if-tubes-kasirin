@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Store;
 
+import java.util.List;
+
 /// Provides CRUD methods for "Store" entity in datasource.
 ///
 /// @author yamaym
@@ -30,4 +32,9 @@ public interface StoreDAO {
     /// @param id store ID to be deleted
     /// @return number of affected rows or a {@code -1} on error
     public int deleteStore(int id);
+
+    /// Gets a list of all stores available in datasource.
+    ///
+    /// @return a list of "Store" transfer objects
+    public List<Store> findAllStores();
 }

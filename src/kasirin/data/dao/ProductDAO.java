@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Product;
 
+import java.util.List;
+
 /// Provides CRUD methods for "Product" entity in datasource.
 ///
 /// @author yamaym
@@ -30,4 +32,9 @@ public interface ProductDAO {
     /// @param id product ID to be deleted
     /// @return number of affected rows or a {@code -1} on error
     public int deleteProduct(int id);
+
+    /// Gets a list of all products available in datasource.
+    ///
+    /// @return a list of "Product" transfer objects
+    public List<Product> findAllProducts();
 }
