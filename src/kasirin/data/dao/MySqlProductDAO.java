@@ -2,6 +2,7 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Product;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MySqlProductDAO implements ProductDAO {
@@ -100,6 +101,28 @@ public class MySqlProductDAO implements ProductDAO {
 
     @Override
     public List<Product> findAllProducts() {
-        return List.of();
+        List<Product> result = new ArrayList<>();
+
+        String query = "SELECT * FROM products";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)){
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int productID = rs.getInt("id");
+                int storeID = rs.getInt("store_id");
+                String productName = rs.getString("name");
+                String productCategory = rs.getString("category");
+                double productBasePrice = rs.getDouble("base_price");
+                String productDescription = rs.getString("description");
+                String productImageURL = rs.getString("image_url");
+
+                Product product = new Product(productCategory,storeID,productName,productBasePrice,productDescription,productImageURL);
+                product.setId(productID);
+                result.add(product);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error in fetching all products: " + e.getMessage());
+        }
+        return result;
     }
 }
