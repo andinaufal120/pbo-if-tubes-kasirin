@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Transaction;
 
+import java.util.List;
+
 public class MySqlTransactionDAO implements TransactionDAO {
     @Override
     public int insertTransaction(Transaction transaction) {
@@ -21,5 +23,10 @@ public class MySqlTransactionDAO implements TransactionDAO {
     @Override
     public int deleteTransaction(int id) {
         return 0;
+    }
+
+    @Override
+    public List<Transaction> findAllTransactions() {
+        return List.of();
     }
 }

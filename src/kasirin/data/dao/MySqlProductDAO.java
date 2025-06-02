@@ -2,6 +2,7 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Product;
 import java.sql.*;
+import java.util.List;
 
 public class MySqlProductDAO implements ProductDAO {
     Connection conn;
@@ -95,5 +96,10 @@ public class MySqlProductDAO implements ProductDAO {
             System.out.println("Error in deleting product: " + e.getMessage());
         }
         return result; // return the number of affected rows on success, return -1 on failure
+    }
+
+    @Override
+    public List<Product> findAllProducts() {
+        return List.of();
     }
 }

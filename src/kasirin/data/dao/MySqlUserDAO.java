@@ -6,6 +6,8 @@ import java.util.List;
 import kasirin.data.model.Role;
 import kasirin.data.model.User;
 
+import java.util.List;
+
 public class MySqlUserDAO implements UserDAO {
 
     Connection conn;
@@ -175,5 +177,10 @@ public class MySqlUserDAO implements UserDAO {
         } catch (SQLException e) {
             System.out.println("Error closing connection: " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return List.of();
     }
 }
