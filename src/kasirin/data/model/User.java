@@ -6,14 +6,12 @@ package kasirin.data.model;
 public class User {
     /* Instance fields */
     private int id; // primary key
-    private int storeID; // foreign key
     private String name;
     private String username;
     private String password;
     private Role role;
 
-    public User(int storeID, String name, String username, String password) {
-        this.setStoreID(storeID);
+    public User(String name, String username, String password) {
         this.setName(name);
         this.setUsername(username);
         this.setPassword(password);
@@ -28,13 +26,13 @@ public class User {
         this.id = id;
     }
 
-    public int getStoreID() {
-        return storeID;
-    }
-
-    public void setStoreID(int storeID) {
-        this.storeID = storeID;
-    }
+//    public int getStoreID() {
+//        return storeID;
+//    }
+//
+//    public void setStoreID(int storeID) {
+//        this.storeID = storeID;
+//    }
 
     public String getName() {
         return name;

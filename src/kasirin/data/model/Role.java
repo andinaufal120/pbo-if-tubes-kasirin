@@ -1,8 +1,28 @@
 package kasirin.data.model;
 
-
-/// Just a common user roles.
-/// <p>Contains 2 roles: ADMIN, CASHIER</p>
+/// User roles that match the database enum values.
+/// <p>Contains 3 roles: ADMIN, STAFF, OWNER</p>
 public enum Role {
-    ADMIN, CASHIER
+    ADMIN("admin"),
+    STAFF("staff"),
+    OWNER("owner");
+
+    private final String value;
+
+    Role(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static Role fromString(String value) {
+        for (Role role : Role.values()) {
+            if (role.value.equalsIgnoreCase(value)) {
+                return role;
+            }
+        }
+        throw new IllegalArgumentException("Unknown role: " + value);
+    }
 }
