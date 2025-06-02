@@ -11,7 +11,7 @@ public class MySqlProductDAO implements ProductDAO {
     public int insertProduct(Product product) {
         int result = -1;
 
-        String query = "INSERT INTO products (store_id,name,category,base_price,description,image_url) VALUES (?,?,?,?,?,?)";
+        String query = "INSERT INTO Products (store_id,name,category,base_price,description,image_url) VALUES (?,?,?,?,?,?)";
         // either use try-with-resources or finally block, so ur computer don't explode.
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,7 +38,7 @@ public class MySqlProductDAO implements ProductDAO {
     public Product findProduct(int id) {
         Product product = null;
 
-        String query = "SELECT * FROM products WHERE id = ?";
+        String query = "SELECT * FROM Products WHERE id = ?";
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
@@ -67,7 +67,7 @@ public class MySqlProductDAO implements ProductDAO {
     public int updateProduct(int id, Product product) {
         int result = -1;
 
-        String query = "UPDATE products SET store_id=?,name=?,category=?,base_price=?,description=?,image_url=? WHERE id=?";
+        String query = "UPDATE Products SET store_id=?,name=?,category=?,base_price=?,description=?,image_url=? WHERE id=?";
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, product.getStoreID());
@@ -88,7 +88,7 @@ public class MySqlProductDAO implements ProductDAO {
     public int deleteProduct(int id) {
         int result = -1;
 
-        String query = "DELETE FROM products WHERE id=?";
+        String query = "DELETE FROM Products WHERE id=?";
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
@@ -103,7 +103,7 @@ public class MySqlProductDAO implements ProductDAO {
     public List<Product> findAllProducts() {
         List<Product> result = new ArrayList<>();
 
-        String query = "SELECT * FROM products";
+        String query = "SELECT * FROM Products";
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
