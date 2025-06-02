@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Store;
 
+import java.util.List;
+
 public class MySqlStoreDAO implements StoreDAO {
     @Override
     public int insertStore(Store store) {
@@ -21,5 +23,10 @@ public class MySqlStoreDAO implements StoreDAO {
     @Override
     public int deleteStore(int id) {
         return 0;
+    }
+
+    @Override
+    public List<Store> findAllStores() {
+        return List.of();
     }
 }

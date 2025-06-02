@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.TransactionDetail;
 
+import java.util.List;
+
 /// Provides CRUD methods for "Transaction Detail" entity in datasource.
 ///
 /// @author yamaym
@@ -30,4 +32,9 @@ public interface TransactionDetailDAO {
     /// @param id transaction detail ID to be deleted
     /// @return number of affected rows or a {@code -1} on error
     public int deleteTransactionDetail(int id);
+
+    /// Gets a list of all transaction details available in datasource.
+    ///
+    /// @return a list of "Transaction Detail" transfer object
+    public List<TransactionDetail> findAllTransactionDetails();
 }

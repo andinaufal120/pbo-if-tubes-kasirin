@@ -2,6 +2,8 @@ package kasirin.data.dao;
 
 import kasirin.data.model.User;
 
+import java.util.List;
+
 /// Provides CRUD methods for "User" entity in datasource.
 ///
 /// @author yamaym
@@ -30,4 +32,9 @@ public interface UserDAO {
     /// @param id user ID to be deleted
     /// @return number of affected rows or a {@code -1} on error
     public int deleteUser(int id);
+
+    /// Gets a list of all users available in datasource.
+    ///
+    /// @return a list of "User" transfer objects
+    public List<User> findAllUsers();
 }
