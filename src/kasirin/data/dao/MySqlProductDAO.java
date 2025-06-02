@@ -2,7 +2,10 @@ package kasirin.data.dao;
 
 import kasirin.data.model.Product;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class MySqlProductDAO implements ProductDAO {
             stmt.setString(6, product.getImageURL());
             stmt.executeUpdate();
 
+            // gets newly created primary key
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     result = rs.getInt(1);
