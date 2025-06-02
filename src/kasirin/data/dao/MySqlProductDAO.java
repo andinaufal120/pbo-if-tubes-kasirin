@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MySqlProductDAO implements ProductDAO {
-
-    public MySqlProductDAO() {}
-
     @Override
     public int insertProduct(Product product) {
         int result = -1;
