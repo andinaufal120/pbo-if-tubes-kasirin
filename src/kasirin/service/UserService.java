@@ -1,10 +1,15 @@
 package kasirin.service;
 
+import java.awt.Component;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import kasirin.data.dao.DAOFactory;
 import kasirin.data.dao.MySqlUserDAO;
 import kasirin.data.model.Role;
 import kasirin.data.model.User;
+import kasirin.ui.IndexPage;
 
 /// Service layer untuk menangani logika bisnis terkait User
 /// @author yamaym
@@ -17,12 +22,98 @@ public class UserService {
         this.userDAO = (MySqlUserDAO) factory.getUserDAO();
     }
 
+    public void performLogin(Component parentComponent, String username, String password, JFrame loginFrame) {
+        try {
+            // Validasi input
+            if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("Username dan password tidak boleh kosong!");
+            }
+
+            // Autentikasi
+            User user = userDAO.authenticateUser(username.trim(), password);
+
+            if (user == null) {
+                throw new SecurityException("Username atau password salah!");
+            }
+
+            // Tampilkan pesan sukses
+            JOptionPane.showMessageDialog(
+                    parentComponent,
+                    "Login berhasil! Selamat datang, " + user.getName(),
+                    "Sukses",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            // Buka halaman utama
+            SwingUtilities.invokeLater(() -> {
+                IndexPage indexPage = new IndexPage(user);
+                indexPage.setVisible(true);
+                loginFrame.dispose();
+            });
+
+        } catch (IllegalArgumentException | SecurityException e) {
+            JOptionPane.showMessageDialog(
+                    parentComponent,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    parentComponent,
+                    "Terjadi kesalahan saat login: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
     /// Autentikasi user dengan username dan password
     public User authenticateUser(String username, String password) {
         if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
             return null;
         }
         return userDAO.authenticateUser(username.trim(), password);
+    }
+
+    public User performRegistration(String name, String username, String password,
+            String confirmPassword, Role role) throws Exception {
+        // Validasi input kosong
+        if (name == null || username == null || password == null
+                || confirmPassword == null || role == null) {
+            throw new IllegalArgumentException("Semua field harus diisi!");
+        }
+
+        name = name.trim();
+        username = username.trim();
+
+        // Validasi password match
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Password dan konfirmasi password tidak sama!");
+        }
+
+        // Validasi panjang password
+        if (password.length() < 6) {
+            throw new IllegalArgumentException("Password minimal 6 karakter!");
+        }
+
+        // Cek apakah username sudah ada
+        if (userDAO.isUsernameExists(username)) {
+            throw new IllegalArgumentException("Username sudah digunakan! Pilih username lain.");
+        }
+
+        // Buat user baru
+        User newUser = new User(name, username, password);
+        newUser.setRole(role);
+
+        // Simpan ke database
+        int userId = userDAO.insertUser(newUser);
+
+        if (userId <= 0) {
+            throw new RuntimeException("Gagal membuat akun. Silakan coba lagi.");
+        }
+
+        return newUser;
     }
 
     /// Registrasi user baru dengan validasi
