@@ -1,10 +1,15 @@
 package kasirin.service;
 
+import java.awt.Component;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import kasirin.data.dao.DAOFactory;
 import kasirin.data.dao.MySqlUserDAO;
 import kasirin.data.model.Role;
 import kasirin.data.model.User;
+import kasirin.ui.IndexPage;
 
 /// Service layer untuk menangani logika bisnis terkait User
 /// @author yamaym
@@ -15,6 +20,52 @@ public class UserService {
     public UserService() {
         DAOFactory factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL);
         this.userDAO = (MySqlUserDAO) factory.getUserDAO();
+    }
+
+    public void performLogin(Component parentComponent, String username, String password, JFrame loginFrame) {
+        try {
+            // Validasi input
+            if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("Username dan password tidak boleh kosong!");
+            }
+
+            // Autentikasi
+            User user = userDAO.authenticateUser(username.trim(), password);
+
+            if (user == null) {
+                throw new SecurityException("Username atau password salah!");
+            }
+
+            // Tampilkan pesan sukses
+            JOptionPane.showMessageDialog(
+                    parentComponent,
+                    "Login berhasil! Selamat datang, " + user.getName(),
+                    "Sukses",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            // Buka halaman utama
+            SwingUtilities.invokeLater(() -> {
+                IndexPage indexPage = new IndexPage(user);
+                indexPage.setVisible(true);
+                loginFrame.dispose();
+            });
+
+        } catch (IllegalArgumentException | SecurityException e) {
+            JOptionPane.showMessageDialog(
+                    parentComponent,
+                    e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    parentComponent,
+                    "Terjadi kesalahan saat login: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     /// Autentikasi user dengan username dan password

@@ -3,36 +3,33 @@ package kasirin.ui;
 import kasirin.data.dao.DAOFactory;
 import kasirin.data.dao.MySqlUserDAO;
 import kasirin.data.model.User;
+import kasirin.service.UserService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /// Form login yang modern dan sederhana untuk autentikasi pengguna
 /// @author yamaym
 public class LoginForm extends JFrame {
+
     // Komponen UI utama
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
     private JButton registerButton;
-    private MySqlUserDAO userDAO;
+    private UserService userService;
 
     public LoginForm() {
-        // Inisialisasi DAO untuk operasi database
-        DAOFactory factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL);
-        userDAO = (MySqlUserDAO) factory.getUserDAO();
-
+        this.userService = new UserService();
         initializeComponents();
         setupLayout();
         setupEventHandlers();
 
-        // Konfigurasi window utama
         setTitle("Kasirin - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         pack();
-        setLocationRelativeTo(null); // Center di layar
+        setLocationRelativeTo(null);
     }
 
     /// Inisialisasi semua komponen UI dengan desain modern yang lebih menarik
@@ -95,7 +92,7 @@ public class LoginForm extends JFrame {
                 // Border dengan warna abu-abu
                 g2.setColor(new Color(209, 213, 219));
                 g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 8, 8);
 
                 g2.dispose();
                 super.paintComponent(g);
@@ -140,9 +137,9 @@ public class LoginForm extends JFrame {
 
                 // Shadow effect
                 g2.setColor(new Color(0, 0, 0, 10));
-                g2.fillRoundRect(4, 4, getWidth()-4, getHeight()-4, 16, 16);
+                g2.fillRoundRect(4, 4, getWidth() - 4, getHeight() - 4, 16, 16);
                 g2.setColor(new Color(0, 0, 0, 5));
-                g2.fillRoundRect(2, 2, getWidth()-2, getHeight()-2, 16, 16);
+                g2.fillRoundRect(2, 2, getWidth() - 2, getHeight() - 2, 16, 16);
 
                 // Background putih dengan rounded corners
                 g2.setColor(Color.WHITE);
@@ -160,7 +157,8 @@ public class LoginForm extends JFrame {
         JLabel titleLabel = new JLabel("Masuk ke Kasirin");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(new Color(17, 24, 39));
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         gbc.gridwidth = 2;
         mainPanel.add(titleLabel, gbc);
 
@@ -180,7 +178,8 @@ public class LoginForm extends JFrame {
         JLabel usernameLabel = new JLabel("Username");
         usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         usernameLabel.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         mainPanel.add(usernameLabel, gbc);
 
         gbc.gridy = 3;
@@ -223,100 +222,25 @@ public class LoginForm extends JFrame {
 
     /// Setup event handlers untuk tombol dan keyboard
     private void setupEventHandlers() {
-        // Handler untuk tombol login
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performLogin();
-            }
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
+            userService.performLogin(this, username, password, this);
         });
 
-        // Handler untuk tombol register
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openRegisterForm();
-            }
+        registerButton.addActionListener(e -> {
+            RegisterForm registerForm = new RegisterForm(this);
+            registerForm.setVisible(true);
+            setVisible(false);
         });
 
-        // Enter key untuk login dari field password
-        passwordField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performLogin();
-            }
+        passwordField.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword());
+            userService.performLogin(this, username, password, this);
         });
 
-        // Enter key untuk pindah ke password field dari username
-        usernameField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                passwordField.requestFocus();
-            }
-        });
-    }
-
-    /// Melakukan proses login dan validasi
-    private void performLogin() {
-        String username = usernameField.getText().trim();
-        String password = new String(passwordField.getPassword());
-
-        // Validasi input kosong
-        if (username.isEmpty() || password.isEmpty()) {
-            showErrorMessage("Username dan password tidak boleh kosong!");
-            return;
-        }
-
-        try {
-            // Coba autentikasi user melalui DAO
-            User user = userDAO.authenticateUser(username, password);
-
-            if (user != null) {
-                // Login berhasil - buka halaman utama
-                showSuccessMessage("Login berhasil! Selamat datang, " + user.getName());
-
-                // Buka halaman utama aplikasi
-                IndexPage indexPage = new IndexPage(user);
-                indexPage.setVisible(true);
-
-                // Tutup form login
-                dispose();
-            } else {
-                // Login gagal
-                showErrorMessage("Username atau password salah!");
-                passwordField.setText(""); // Clear password field
-                passwordField.requestFocus();
-            }
-        } catch (Exception ex) {
-            showErrorMessage("Terjadi kesalahan saat login: " + ex.getMessage());
-        }
-    }
-
-    /// Membuka form registrasi
-    private void openRegisterForm() {
-        RegisterForm registerForm = new RegisterForm(this);
-        registerForm.setVisible(true);
-        setVisible(false); // Sembunyikan login form
-    }
-
-    /// Menampilkan pesan error dengan styling yang konsisten
-    private void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(
-                this,
-                message,
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-        );
-    }
-
-    /// Menampilkan pesan sukses
-    private void showSuccessMessage(String message) {
-        JOptionPane.showMessageDialog(
-                this,
-                message,
-                "Sukses",
-                JOptionPane.INFORMATION_MESSAGE
-        );
+        usernameField.addActionListener(e -> passwordField.requestFocus());
     }
 
     /// Method untuk menampilkan kembali login form (dipanggil dari register form)
