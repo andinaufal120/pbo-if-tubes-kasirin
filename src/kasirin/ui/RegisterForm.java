@@ -1,17 +1,17 @@
 package kasirin.ui;
 
+import java.awt.*;
+import javax.swing.*;
 import kasirin.data.dao.DAOFactory;
 import kasirin.data.dao.MySqlUserDAO;
-import kasirin.data.model.User;
 import kasirin.data.model.Role;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import kasirin.data.model.User;
+import kasirin.service.UserService;
 
 /// Form registrasi untuk membuat akun pengguna baru
 /// @author yamaym
 public class RegisterForm extends JFrame {
+
     // Komponen UI untuk input data
     private JTextField nameField;
     private JTextField usernameField;
@@ -25,9 +25,11 @@ public class RegisterForm extends JFrame {
     // Reference ke form login dan DAO
     private LoginForm parentForm;
     private MySqlUserDAO userDAO;
+    private UserService userService;
 
     public RegisterForm(LoginForm parent) {
         this.parentForm = parent;
+        this.userService = new UserService();
 
         // Inisialisasi DAO
         DAOFactory factory = DAOFactory.getDAOFactory(DAOFactory.MYSQL);
@@ -73,7 +75,7 @@ public class RegisterForm extends JFrame {
                 // Border
                 g2.setColor(new Color(229, 231, 235));
                 g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 8, 8);
 
                 g2.dispose();
                 super.paintComponent(g);
@@ -82,8 +84,6 @@ public class RegisterForm extends JFrame {
         roleComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         roleComboBox.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
         roleComboBox.setBackground(new Color(249, 250, 251));
-
-
 
         // Tombol register dengan gradien hijau
         registerButton = new JButton("Daftar") {
@@ -125,7 +125,7 @@ public class RegisterForm extends JFrame {
                 // Border abu-abu
                 g2.setColor(new Color(209, 213, 219));
                 g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 8, 8);
 
                 g2.dispose();
                 super.paintComponent(g);
@@ -154,7 +154,7 @@ public class RegisterForm extends JFrame {
                 // Border dengan warna yang soft
                 g2.setColor(new Color(229, 231, 235));
                 g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 8, 8);
 
                 g2.dispose();
                 super.paintComponent(g);
@@ -182,7 +182,7 @@ public class RegisterForm extends JFrame {
                 // Border dengan warna yang soft
                 g2.setColor(new Color(229, 231, 235));
                 g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(1, 1, getWidth()-2, getHeight()-2, 8, 8);
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 8, 8);
 
                 g2.dispose();
                 super.paintComponent(g);
@@ -226,9 +226,9 @@ public class RegisterForm extends JFrame {
 
                 // Shadow effect
                 g2.setColor(new Color(0, 0, 0, 8));
-                g2.fillRoundRect(4, 4, getWidth()-4, getHeight()-4, 16, 16);
+                g2.fillRoundRect(4, 4, getWidth() - 4, getHeight() - 4, 16, 16);
                 g2.setColor(new Color(0, 0, 0, 4));
-                g2.fillRoundRect(2, 2, getWidth()-2, getHeight()-2, 16, 16);
+                g2.fillRoundRect(2, 2, getWidth() - 2, getHeight() - 2, 16, 16);
 
                 // White background
                 g2.setColor(Color.WHITE);
@@ -264,10 +264,12 @@ public class RegisterForm extends JFrame {
         JLabel nameLabel = new JLabel("Nama Lengkap");
         nameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         nameLabel.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         mainPanel.add(nameLabel, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
         gbc.insets = new Insets(5, 0, 15, 0);
         mainPanel.add(nameField, gbc);
 
@@ -275,11 +277,13 @@ public class RegisterForm extends JFrame {
         JLabel usernameLabel = new JLabel("Username");
         usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         usernameLabel.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         gbc.insets = new Insets(5, 0, 2, 15);
         mainPanel.add(usernameLabel, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 2;
+        gbc.gridx = 1;
+        gbc.gridy = 2;
         gbc.insets = new Insets(5, 0, 15, 0);
         mainPanel.add(usernameField, gbc);
 
@@ -287,11 +291,13 @@ public class RegisterForm extends JFrame {
         JLabel passwordLabel = new JLabel("Password");
         passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         passwordLabel.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         gbc.insets = new Insets(5, 0, 2, 15);
         mainPanel.add(passwordLabel, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 3;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
         gbc.insets = new Insets(5, 0, 15, 0);
         mainPanel.add(passwordField, gbc);
 
@@ -299,11 +305,13 @@ public class RegisterForm extends JFrame {
         JLabel confirmPasswordLabel = new JLabel("Konfirmasi Password");
         confirmPasswordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         confirmPasswordLabel.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.insets = new Insets(5, 0, 2, 15);
         mainPanel.add(confirmPasswordLabel, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 4;
+        gbc.gridx = 1;
+        gbc.gridy = 4;
         gbc.insets = new Insets(5, 0, 15, 0);
         mainPanel.add(confirmPasswordField, gbc);
 
@@ -311,16 +319,19 @@ public class RegisterForm extends JFrame {
         JLabel roleLabel = new JLabel("Role");
         roleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         roleLabel.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.insets = new Insets(5, 0, 2, 15);
         mainPanel.add(roleLabel, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 5;
+        gbc.gridx = 1;
+        gbc.gridy = 5;
         gbc.insets = new Insets(5, 0, 25, 0); // Extra bottom padding before buttons
         mainPanel.add(roleComboBox, gbc);
 
         // Row 6: Register Button
-        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridx = 0;
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(15, 0, 10, 0);
         gbc.anchor = GridBagConstraints.CENTER;
@@ -347,7 +358,8 @@ public class RegisterForm extends JFrame {
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         label.setForeground(new Color(55, 65, 81));
-        gbc.gridx = 0; gbc.gridy = row * 2 - 1;
+        gbc.gridx = 0;
+        gbc.gridy = row * 2 - 1;
         gbc.fill = GridBagConstraints.NONE;
         panel.add(label, gbc);
 
@@ -364,20 +376,29 @@ public class RegisterForm extends JFrame {
     /// Setup event handlers untuk tombol dan validasi
     private void setupEventHandlers() {
         // Handler untuk tombol register
-        registerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                performRegistration();
+        registerButton.addActionListener(e -> {
+            try {
+                String name = nameField.getText().trim();
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword());
+                String confirmPassword = new String(confirmPasswordField.getPassword());
+                Role role = (Role) roleComboBox.getSelectedItem();
+
+                User newUser = userService.performRegistration(name, username, password, confirmPassword, role);
+
+                showSuccessMessage("Registrasi berhasil! Silakan login dengan akun baru Anda.");
+                clearForm();
+                goBackToLogin();
+
+            } catch (IllegalArgumentException ex) {
+                handleRegistrationError(ex.getMessage());
+            } catch (Exception ex) {
+                showErrorMessage("Terjadi kesalahan: " + ex.getMessage());
             }
         });
 
         // Handler untuk tombol kembali
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                goBackToLogin();
-            }
-        });
+        backButton.addActionListener(e -> goBackToLogin());
 
         // Handler untuk window closing
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -388,67 +409,17 @@ public class RegisterForm extends JFrame {
         });
     }
 
-    /// Melakukan proses registrasi dengan validasi lengkap
-    private void performRegistration() {
-        // Ambil data dari form
-        String name = nameField.getText().trim();
-        String username = usernameField.getText().trim();
-        String password = new String(passwordField.getPassword());
-        String confirmPassword = new String(confirmPasswordField.getPassword());
-        Role role = (Role) roleComboBox.getSelectedItem();
+// Helper method untuk handle error spesifik
+    private void handleRegistrationError(String message) {
+        showErrorMessage(message);
 
-        // Validasi input kosong
-        if (name.isEmpty() || username.isEmpty() || password.isEmpty() ||
-                confirmPassword.isEmpty() ) {
-            showErrorMessage("Semua field harus diisi!");
-            return;
-        }
-
-        // Validasi password match
-        if (!password.equals(confirmPassword)) {
-            showErrorMessage("Password dan konfirmasi password tidak sama!");
+        if (message.contains("Username sudah digunakan")) {
+            usernameField.requestFocus();
+        } else if (message.contains("Password dan konfirmasi")) {
             confirmPasswordField.setText("");
             confirmPasswordField.requestFocus();
-            return;
-        }
-
-        // Validasi panjang password
-        if (password.length() < 6) {
-            showErrorMessage("Password minimal 6 karakter!");
-            return;
-        }
-
-
-
-        try {
-            // Cek apakah username sudah ada
-            if (userDAO.isUsernameExists(username)) {
-                showErrorMessage("Username sudah digunakan! Pilih username lain.");
-                usernameField.requestFocus();
-                return;
-            }
-
-            // Buat user baru
-            User newUser = new User(name, username, password);
-            newUser.setRole(role);
-
-            // Simpan ke database
-            int userId = userDAO.insertUser(newUser);
-
-            if (userId > 0) {
-                showSuccessMessage("Registrasi berhasil! Silakan login dengan akun baru Anda.");
-
-                // Clear form fields
-                clearForm();
-
-                // Kembali ke login form
-                goBackToLogin();
-            } else {
-                showErrorMessage("Gagal membuat akun. Silakan coba lagi.");
-            }
-
-        } catch (Exception ex) {
-            showErrorMessage("Terjadi kesalahan: " + ex.getMessage());
+        } else if (message.contains("Password minimal")) {
+            passwordField.requestFocus();
         }
     }
 

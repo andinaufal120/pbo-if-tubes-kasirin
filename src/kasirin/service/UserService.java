@@ -76,6 +76,46 @@ public class UserService {
         return userDAO.authenticateUser(username.trim(), password);
     }
 
+    public User performRegistration(String name, String username, String password,
+            String confirmPassword, Role role) throws Exception {
+        // Validasi input kosong
+        if (name == null || username == null || password == null
+                || confirmPassword == null || role == null) {
+            throw new IllegalArgumentException("Semua field harus diisi!");
+        }
+
+        name = name.trim();
+        username = username.trim();
+
+        // Validasi password match
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Password dan konfirmasi password tidak sama!");
+        }
+
+        // Validasi panjang password
+        if (password.length() < 6) {
+            throw new IllegalArgumentException("Password minimal 6 karakter!");
+        }
+
+        // Cek apakah username sudah ada
+        if (userDAO.isUsernameExists(username)) {
+            throw new IllegalArgumentException("Username sudah digunakan! Pilih username lain.");
+        }
+
+        // Buat user baru
+        User newUser = new User(name, username, password);
+        newUser.setRole(role);
+
+        // Simpan ke database
+        int userId = userDAO.insertUser(newUser);
+
+        if (userId <= 0) {
+            throw new RuntimeException("Gagal membuat akun. Silakan coba lagi.");
+        }
+
+        return newUser;
+    }
+
     /// Registrasi user baru dengan validasi
     public boolean registerUser(String name, String username, String password, Role role) {
         // Validasi input
