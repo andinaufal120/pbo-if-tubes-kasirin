@@ -27,3 +27,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+
+# Ignore semua JAR di lib/, kecuali yang custom
+/lib/*.jar
