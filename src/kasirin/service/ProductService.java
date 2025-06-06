@@ -5,6 +5,8 @@ import kasirin.data.dao.ProductDAO;
 import kasirin.data.dao.StoreDAO;
 import kasirin.data.model.Product;
 
+import java.util.List;
+
 /// A service class that provides operation logics for products management in Kasirin application.
 ///
 /// @author yamaym
@@ -19,6 +21,49 @@ public class ProductService {
         if (validateProduct(product)) {
             productDAO.insertProduct(product);
         }
+    }
+
+    /// Updates an existing product with new validated properties.
+    ///
+    /// @param id      the product id to be updated
+    /// @param product a "Product" transfer object
+    public void updateProduct(int id, Product product) {
+        if (validateProduct(product)) {
+            int rowsAffected = productDAO.updateProduct(id, product);
+            if (rowsAffected == 0) {
+                throw new IllegalArgumentException("Product id does not exist");
+            }
+        }
+    }
+
+    /// Deletes an existing product.
+    ///
+    /// @param id the product id to be deleted
+    public void deleteProduct(int id) {
+        int affectedRows = productDAO.deleteProduct(id);
+        if (affectedRows == 0) {
+            throw new IllegalArgumentException("Product id does not exist");
+        }
+    }
+
+    /// Gets an existing product.
+    ///
+    /// @param id the product id to be found
+    /// @return a "Product" transfer object
+    public Product getProduct(int id) {
+        Product product = productDAO.findProduct(id);
+        if (product == null) {
+            throw new IllegalArgumentException("Product id does not exist");
+        } else {
+            return product;
+        }
+    }
+
+    /// Gets a list of products.
+    ///
+    /// @return a list of "Product" transfer objects
+    public List<Product> getAllProducts() {
+        return productDAO.findAllProducts();
     }
 
     /// Validates each fields of a given product, useful when trying to write in to datasource.
