@@ -27,6 +27,7 @@ public class MainController implements Initializable {
 
     @FXML private Label welcomeLabel;
     @FXML private Label userInfoLabel;
+    @FXML private Label storeCountLabel;
     @FXML private Button logoutButton;
     @FXML private Button createStoreButton;
     @FXML private VBox storeListContainer;
@@ -35,9 +36,6 @@ public class MainController implements Initializable {
     @FXML private Button productButton;
     @FXML private Button transactionButton;
     @FXML private Button reportButton;
-    @FXML private VBox userManagementButton;  // Changed to VBox
-    @FXML private VBox storeManagementButton; // Changed to VBox
-    @FXML private Button settingsButton;
 
     private User currentUser;
     private StoreService storeService;
@@ -60,7 +58,6 @@ public class MainController implements Initializable {
         try {
             this.currentUser = user;
             setupUserInterface();
-            setupMenuVisibility();
             loadStores();
             System.out.println("MainController initialized with user: " + user.getName());
         } catch (Exception e) {
@@ -73,26 +70,13 @@ public class MainController implements Initializable {
      * Setup user interface with user information
      */
     private void setupUserInterface() {
-        welcomeLabel.setText("Selamat Datang di Kasirin!");
+        welcomeLabel.setText("Selamat Datang, " + currentUser.getName() + "!");
 
-        String userInfo = String.format("Masuk sebagai: %s (%s) - Role: %s",
-                currentUser.getName(),
+        String userInfo = String.format("%s (%s)",
                 currentUser.getUsername(),
                 currentUser.getRole().getValue().toUpperCase()
         );
         userInfoLabel.setText(userInfo);
-    }
-
-    /**
-     * Setup menu visibility based on user role
-     */
-    private void setupMenuVisibility() {
-        // Hide admin/owner only features for staff
-        boolean isAdminOrOwner = currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.OWNER;
-        userManagementButton.setVisible(isAdminOrOwner);
-        userManagementButton.setManaged(isAdminOrOwner);
-        storeManagementButton.setVisible(isAdminOrOwner);
-        storeManagementButton.setManaged(isAdminOrOwner);
     }
 
     /**
@@ -101,6 +85,9 @@ public class MainController implements Initializable {
     private void loadStores() {
         try {
             List<Store> stores = storeService.getStoresByUserId(currentUser.getId());
+
+            // Update store count
+            storeCountLabel.setText(stores.size() + " toko");
 
             // Clear existing store cards
             storeListContainer.getChildren().clear();
@@ -180,34 +167,18 @@ public class MainController implements Initializable {
         AlertUtil.showInfo("Modul Laporan", "Fitur laporan penjualan akan segera tersedia!");
     }
 
-    @FXML
-    private void handleUserManagement() {
-        if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.OWNER) {
-            AlertUtil.showInfo("Manajemen Pengguna", "Fitur manajemen pengguna akan segera tersedia!");
-        } else {
-            AlertUtil.showError("Akses Ditolak", "Anda tidak memiliki izin untuk mengakses fitur ini.");
-        }
-    }
-
-    @FXML
-    private void handleStoreManagement() {
-        if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.OWNER) {
-            AlertUtil.showInfo("Manajemen Toko", "Fitur manajemen toko akan segera tersedia!");
-        } else {
-            AlertUtil.showError("Akses Ditolak", "Anda tidak memiliki izin untuk mengakses fitur ini.");
-        }
-    }
-
-    @FXML
-    private void handleSettings() {
-        AlertUtil.showInfo("Pengaturan", "Fitur pengaturan akan segera tersedia!");
-    }
-
     /**
      * Handle manage store action from store card
      */
     private void handleManageStore(Store store) {
-        AlertUtil.showInfo("Kelola Toko: " + store.getName(), "Fitur kelola toko akan segera tersedia!");
+        try {
+            Stage currentStage = (Stage) logoutButton.getScene().getWindow();
+            NavigationUtil.navigateToStoreManagementView(currentStage, currentUser, store);
+        } catch (Exception e) {
+            System.err.println("Error navigating to store management: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtil.showError("Error", "Failed to open store management: " + e.getMessage());
+        }
     }
 
     /**

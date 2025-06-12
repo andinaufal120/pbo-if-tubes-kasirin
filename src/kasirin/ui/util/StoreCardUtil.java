@@ -14,51 +14,55 @@ import java.util.function.Consumer;
 /// Utility class for creating store card components
 /// @author yamaym
 public class StoreCardUtil {
-    
+
     /// Create a store card component
     public static VBox createStoreCard(Store store, Consumer<Store> onManageAction) {
-        VBox card = new VBox(10);
+        VBox card = new VBox(15);
         card.getStyleClass().add("store-card");
         card.setPadding(new Insets(20));
-        
+
+        // Store header with name and type badge
+        HBox headerBox = new HBox(10);
+        headerBox.setAlignment(Pos.CENTER_LEFT);
+
         // Store name
         Label nameLabel = new Label(store.getName());
         nameLabel.getStyleClass().add("store-name");
-        
-        // Store type
-        String typeText = store.getType() != null && !store.getType().isEmpty() 
-            ? store.getType() : "N/A";
-        Label typeLabel = new Label("Tipe: " + typeText);
-        typeLabel.getStyleClass().add("store-info");
-        
+        headerBox.getChildren().add(nameLabel);
+        HBox.setHgrow(nameLabel, Priority.ALWAYS);
+
+        // Store type badge
+        String typeText = store.getType() != null && !store.getType().isEmpty()
+                ? store.getType() : "General";
+        Label typeLabel = new Label(typeText);
+        typeLabel.getStyleClass().add("store-badge");
+        headerBox.getChildren().add(typeLabel);
+
         // Store address (truncated if too long)
         String addressText = store.getAddress();
         if (addressText != null && addressText.length() > 100) {
             addressText = addressText.substring(0, 97) + "...";
         }
         if (addressText == null || addressText.isEmpty()) {
-            addressText = "N/A";
+            addressText = "No address provided";
         }
-        Label addressLabel = new Label("Alamat: " + addressText);
+        Label addressLabel = new Label(addressText);
         addressLabel.getStyleClass().add("store-info");
-        
-        // Info container
-        VBox infoContainer = new VBox(5);
-        infoContainer.getChildren().addAll(nameLabel, typeLabel, addressLabel);
-        
-        // Manage button
-        Button manageButton = new Button("Kelola");
+        addressLabel.setWrapText(true);
+
+        // Action buttons
+        HBox actionBox = new HBox(10);
+        actionBox.setAlignment(Pos.CENTER_RIGHT);
+
+        Button manageButton = new Button("Kelola Toko");
         manageButton.getStyleClass().add("manage-button");
         manageButton.setOnAction(e -> onManageAction.accept(store));
-        
-        // Main container with info and button
-        HBox mainContainer = new HBox(20);
-        mainContainer.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(infoContainer, Priority.ALWAYS);
-        mainContainer.getChildren().addAll(infoContainer, manageButton);
-        
-        card.getChildren().add(mainContainer);
-        
+
+        actionBox.getChildren().add(manageButton);
+
+        // Add all components to card
+        card.getChildren().addAll(headerBox, addressLabel, actionBox);
+
         return card;
     }
 }

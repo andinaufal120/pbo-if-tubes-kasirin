@@ -1,4 +1,4 @@
-x<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -12,35 +12,35 @@ x<?xml version="1.0" encoding="UTF-8"?>
    <padding>
       <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
    </padding>
-   
+
    <VBox alignment="CENTER" spacing="25.0" styleClass="create-store-form">
       <padding>
          <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
       </padding>
-      
+
       <!-- Header -->
       <VBox alignment="CENTER" spacing="10.0">
          <Label fx:id="titleLabel" text="Buat Toko Baru" styleClass="title" />
       </VBox>
-      
+
       <!-- Form Fields -->
       <VBox spacing="20.0">
          <VBox spacing="6.0">
             <Label text="Nama Toko" styleClass="field-label" />
             <TextField fx:id="nameField" promptText="Masukkan nama toko" styleClass="text-field" />
          </VBox>
-         
+
          <VBox spacing="6.0">
             <Label text="Tipe Toko" styleClass="field-label" />
             <TextField fx:id="typeField" promptText="Masukkan tipe toko (opsional)" styleClass="text-field" />
          </VBox>
-         
+
          <VBox spacing="6.0">
             <Label text="Alamat" styleClass="field-label" />
             <TextArea fx:id="addressArea" promptText="Masukkan alamat toko (opsional)" prefRowCount="4" styleClass="text-area" wrapText="true" />
          </VBox>
       </VBox>
-      
+
       <!-- Buttons -->
       <HBox spacing="15.0" alignment="CENTER">
          <Button fx:id="createButton" text="Buat Toko" onAction="#handleCreateStore" styleClass="primary-button" />

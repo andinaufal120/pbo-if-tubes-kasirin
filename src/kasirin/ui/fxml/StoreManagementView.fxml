@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.StoreManagementController" styleClass="store-management-container">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="250.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+
+            <!-- Store Info Header -->
+            <VBox styleClass="store-header" spacing="10.0">
+                <padding>
+                    <Insets bottom="20.0" left="15.0" right="15.0" top="15.0" />
+                </padding>
+                <Label fx:id="storeNameLabel" text="Store Name" styleClass="store-name" />
+                <Label fx:id="storeTypeLabel" text="Store Type" styleClass="store-type" />
+                <Separator />
+            </VBox>
+
+            <!-- Navigation Menu -->
+            <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+                <Button fx:id="dashboardBtn" text="📊 Dashboard" onAction="#showDashboard" styleClass="sidebar-button, active" maxWidth="Infinity" />
+                <Button fx:id="productsBtn" text="📦 Products" onAction="#showProducts" styleClass="sidebar-button" maxWidth="Infinity" />
+                <Button fx:id="transactionsBtn" text="💳 Transactions" onAction="#showTransactions" styleClass="sidebar-button" maxWidth="Infinity" />
+                <Button fx:id="reportsBtn" text="📈 Reports" onAction="#showReports" styleClass="sidebar-button" maxWidth="Infinity" />
+
+                <!-- Spacer -->
+                <Region VBox.vgrow="ALWAYS" />
+
+                <!-- Bottom Actions -->
+                <Separator />
+                <Button fx:id="settingsBtn" text="⚙️ Settings" onAction="#showSettings" styleClass="sidebar-button" maxWidth="Infinity" />
+                <Button fx:id="backBtn" text="← Back to Main" onAction="#backToMain" styleClass="sidebar-button, secondary" maxWidth="Infinity" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- Main Content Area -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- Content will be dynamically loaded here -->
+        </StackPane>
+    </center>
+</BorderPane>

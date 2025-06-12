@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="reports-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.ReportsController">
+
+    <!-- Header -->
+    <top>
+        <VBox spacing="20.0" styleClass="page-header">
+            <padding>
+                <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label styleClass="page-title" text="Laporan Penjualan" />
+                    <Label styleClass="page-subtitle" text="Analisis kinerja dan transaksi toko Anda" />
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="reports-scroll">
+            <VBox spacing="30.0">
+                <padding>
+                    <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+                </padding>
+
+                <!-- Summary Cards -->
+                <GridPane hgap="20.0" vgap="20.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+
+                    <!-- Total Revenue -->
+                    <VBox spacing="10.0" styleClass="report-card, revenue-card" GridPane.columnIndex="0">
+                        <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                        <Label styleClass="report-icon" text="💰" />
+                        <Label styleClass="report-label" text="Total Revenue" />
+                        <Label fx:id="totalRevenueLabel" styleClass="report-value" text="Rp 0" />
+                        <Label fx:id="revenueChangeLabel" styleClass="report-change" text="+0% from last period" />
+                    </VBox>
+
+                    <!-- Total Transactions -->
+                    <VBox spacing="10.0" styleClass="report-card, transaction-card" GridPane.columnIndex="1">
+                        <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                        <Label styleClass="report-icon" text="🧾" />
+                        <Label styleClass="report-label" text="Transactions" />
+                        <Label fx:id="totalTransactionsLabel" styleClass="report-value" text="0" />
+                        <Label fx:id="transactionChangeLabel" styleClass="report-change" text="+0% from last period" />
+                    </VBox>
+
+                    <!-- Top Product -->
+                    <VBox spacing="10.0" styleClass="report-card, product-card" GridPane.columnIndex="2">
+                        <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                        <Label styleClass="report-icon" text="🏆" />
+                        <Label styleClass="report-label" text="Top Product" />
+                        <Label fx:id="topProductLabel" styleClass="report-value, small-text" text="-" />
+                        <Label fx:id="topProductSalesLabel" styleClass="report-change" text="0 sold" />
+                    </VBox>
+               <rowConstraints>
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+
+                <!-- Charts Section -->
+                <HBox spacing="30.0" />
+
+                <!-- Detailed Transactions Table -->
+                <VBox spacing="15.0" styleClass="transactions-table-section">
+                    <HBox alignment="CENTER_LEFT" spacing="15.0">
+                        <Label styleClass="section-title" text="Transaction Details" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="transactionSearchField" prefWidth="250.0" promptText="Search transactions..." styleClass="search-field" />
+                        <Button fx:id="searchTransactionBtn" onAction="#searchTransactions" styleClass="icon-button" text="🔍" />
+                    </HBox>
+
+                    <TableView fx:id="transactionsTable" prefHeight="400.0">
+                        <columns>
+                            <TableColumn fx:id="transactionIdCol" prefWidth="120.0" text="Transaction ID" />
+                            <TableColumn fx:id="transactionDateCol" prefWidth="150.0" text="Date n Time" />
+                            <TableColumn fx:id="transactionCashierCol" prefWidth="120.0" text="Cashier" />
+                            <TableColumn fx:id="transactionItemsCol" prefWidth="80.0" text="Items" />
+                            <TableColumn fx:id="transactionTotalCol" prefWidth="120.0" text="Total Amount" />
+                            <TableColumn fx:id="transactionActionsCol" prefWidth="100.0" text="Actions" />
+                        </columns>
+                    </TableView>
+
+                    <!-- Pagination -->
+                    <HBox alignment="CENTER" spacing="10.0">
+                        <Button fx:id="prevPageBtn" onAction="#previousPage" styleClass="pagination-button" text="← Previous" />
+                        <Label fx:id="pageInfoLabel" styleClass="page-info" text="Page 1 of 1" />
+                        <Button fx:id="nextPageBtn" onAction="#nextPage" styleClass="pagination-button" text="Next →" />
+                    </HBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+   <stylesheets>
+      <URL value="@../css/styles.css" />
+      <URL value="@../css/store-management-styles.css" />
+   </stylesheets>
+</BorderPane>

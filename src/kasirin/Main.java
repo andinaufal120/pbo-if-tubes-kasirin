@@ -38,8 +38,15 @@ public class Main extends Application {
 
             primaryStage.setTitle("Kasirin - Point of Sale System");
             primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
+            primaryStage.setResizable(true);
             primaryStage.centerOnScreen();
+
+            // Set reasonable default size
+            primaryStage.setWidth(1000);
+            primaryStage.setHeight(700);
+            primaryStage.setMinWidth(800);
+            primaryStage.setMinHeight(600);
+
             primaryStage.show();
 
         } catch (Exception e) {

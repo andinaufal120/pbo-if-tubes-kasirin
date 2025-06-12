@@ -5,9 +5,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import kasirin.data.model.Store;
 import kasirin.data.model.User;
 import kasirin.ui.controller.CreateStoreController;
 import kasirin.ui.controller.MainController;
+import kasirin.ui.controller.StoreManagementController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -85,6 +87,39 @@ public class NavigationUtil {
 
         currentStage.setScene(scene);
         currentStage.setTitle("Kasirin - Dashboard");
+        currentStage.setMaximized(true);
+        currentStage.centerOnScreen();
+    }
+
+    /// Navigate to store management view
+    public static void navigateToStoreManagementView(Stage currentStage, User user, Store store) throws Exception {
+        URL fxmlLocation = NavigationUtil.class.getResource("/kasirin/ui/fxml/StoreManagementView.fxml");
+        if (fxmlLocation == null) {
+            throw new IOException("Cannot find StoreManagementView.fxml");
+        }
+
+        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+        Parent root = loader.load();
+
+        // Get controller and initialize with data
+        StoreManagementController controller = loader.getController();
+        controller.initializeWithData(user, store);
+
+        Scene scene = new Scene(root);
+
+        // Load both CSS files
+        URL mainCssLocation = NavigationUtil.class.getResource("/kasirin/ui/css/styles.css");
+        if (mainCssLocation != null) {
+            scene.getStylesheets().add(mainCssLocation.toExternalForm());
+        }
+
+        URL storeCssLocation = NavigationUtil.class.getResource("/kasirin/ui/css/store-management-styles.css");
+        if (storeCssLocation != null) {
+            scene.getStylesheets().add(storeCssLocation.toExternalForm());
+        }
+
+        currentStage.setScene(scene);
+        currentStage.setTitle("Kasirin - " + store.getName() + " Management");
         currentStage.setMaximized(true);
         currentStage.centerOnScreen();
     }
