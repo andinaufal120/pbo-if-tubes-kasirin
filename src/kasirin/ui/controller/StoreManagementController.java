@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 
 /**
  * Controller for the Store Management System
- * Handles navigation between different modules (Dashboard, Products, Transactions, Reports)
+ * Handles navigation between different modules (Dashboard, Products, Transactions, Reports, Cashier)
  *
  * @author yamaym
  */
@@ -32,6 +32,7 @@ public class StoreManagementController implements Initializable {
     @FXML private Button productsBtn;
     @FXML private Button transactionsBtn;
     @FXML private Button reportsBtn;
+    @FXML private Button cashierBtn;
     @FXML private Button settingsBtn;
     @FXML private Button backBtn;
 
@@ -136,6 +137,21 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
+     * Show Cashier management view
+     */
+    @FXML
+    private void showCashier() {
+        try {
+            loadView("/kasirin/ui/fxml/CashierView.fxml", "Cashier");
+            updateActiveButton(cashierBtn);
+        } catch (Exception e) {
+            System.err.println("Error loading cashier: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtil.showError("Error", "Failed to load cashier management: " + e.getMessage());
+        }
+    }
+
+    /**
      * Show Settings view
      */
     @FXML
@@ -180,6 +196,8 @@ public class StoreManagementController implements Initializable {
             ((TransactionsController) controller).initializeWithData(currentUser, currentStore);
         } else if (controller instanceof ReportsController) {
             ((ReportsController) controller).initializeWithData(currentUser, currentStore);
+        } else if (controller instanceof CashierController) {
+            ((CashierController) controller).initializeWithData(currentUser, currentStore);
         }
 
         // Clear and add the new view

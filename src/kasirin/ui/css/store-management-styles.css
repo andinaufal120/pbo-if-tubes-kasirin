@@ -248,6 +248,25 @@
   -fx-background-color: #2563eb;
 }
 
+/* Cashier Management Styles */
+.cashier-container {
+  -fx-background-color: #f8fafc;
+}
+
+.cashier-form {
+  -fx-background-color: white;
+  -fx-background-radius: 12px;
+  -fx-padding: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
+}
+
+.cashier-table-section {
+  -fx-background-color: white;
+  -fx-background-radius: 12px;
+  -fx-padding: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
+}
+
 /* Transactions/POS Styles */
 .transactions-container {
   -fx-background-color: #f8fafc;

@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.StoreManagementController" styleClass="store-management-container">
+<BorderPane styleClass="store-management-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.StoreManagementController">
 
     <!-- Sidebar -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="250.0">
+        <VBox prefWidth="250.0" styleClass="sidebar">
             <padding>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
             </padding>
 
             <!-- Store Info Header -->
-            <VBox styleClass="store-header" spacing="10.0">
+            <VBox prefHeight="67.0" prefWidth="190.0" spacing="10.0" styleClass="store-header">
                 <padding>
                     <Insets bottom="20.0" left="15.0" right="15.0" top="15.0" />
                 </padding>
-                <Label fx:id="storeNameLabel" text="Store Name" styleClass="store-name" />
-                <Label fx:id="storeTypeLabel" text="Store Type" styleClass="store-type" />
-                <Separator />
+                <Label fx:id="storeNameLabel" styleClass="store-name" text="Store Name" />
+                <Label fx:id="storeTypeLabel" styleClass="store-type" text="Store Type" />
+                <Separator prefHeight="0.0" prefWidth="180.0" />
             </VBox>
 
             <!-- Navigation Menu -->
             <VBox spacing="8.0" VBox.vgrow="ALWAYS">
-                <Button fx:id="dashboardBtn" text="📊 Dashboard" onAction="#showDashboard" styleClass="sidebar-button, active" maxWidth="Infinity" />
-                <Button fx:id="productsBtn" text="📦 Products" onAction="#showProducts" styleClass="sidebar-button" maxWidth="Infinity" />
-                <Button fx:id="transactionsBtn" text="💳 Transactions" onAction="#showTransactions" styleClass="sidebar-button" maxWidth="Infinity" />
-                <Button fx:id="reportsBtn" text="📈 Reports" onAction="#showReports" styleClass="sidebar-button" maxWidth="Infinity" />
+                <Button fx:id="dashboardBtn" maxWidth="Infinity" onAction="#showDashboard" styleClass="sidebar-button, active" text="📊 Dashboard" />
+                <Button fx:id="productsBtn" maxWidth="Infinity" onAction="#showProducts" styleClass="sidebar-button" text="📦 Produk" />
+                <Button fx:id="transactionsBtn" maxWidth="Infinity" onAction="#showTransactions" styleClass="sidebar-button" text="💳 Kasir" />
+                <Button fx:id="cashierBtn" maxWidth="Infinity" onAction="#showCashier" styleClass="sidebar-button" text="👥 Manajemen Kasir" />
+                <Button fx:id="reportsBtn" maxWidth="Infinity" onAction="#showReports" styleClass="sidebar-button" text="📈 Laporan" />
 
                 <!-- Spacer -->
                 <Region VBox.vgrow="ALWAYS" />
 
                 <!-- Bottom Actions -->
                 <Separator />
-                <Button fx:id="settingsBtn" text="⚙️ Settings" onAction="#showSettings" styleClass="sidebar-button" maxWidth="Infinity" />
-                <Button fx:id="backBtn" text="← Back to Main" onAction="#backToMain" styleClass="sidebar-button, secondary" maxWidth="Infinity" />
+                <Button fx:id="backBtn" maxWidth="Infinity" onAction="#backToMain" styleClass="sidebar-button, secondary" text="← Kembali ke Menu Utama" />
             </VBox>
         </VBox>
     </left>
@@ -47,4 +53,8 @@
             <!-- Content will be dynamically loaded here -->
         </StackPane>
     </center>
+   <stylesheets>
+      <URL value="@../css/store-management-styles.css" />
+      <URL value="@../css/styles.css" />
+   </stylesheets>
 </BorderPane>

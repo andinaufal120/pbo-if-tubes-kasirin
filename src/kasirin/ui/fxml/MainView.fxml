@@ -48,7 +48,6 @@
                      <Label fx:id="welcomeLabel" styleClass="welcome-title" text="Selamat Datang di Kasirin!" />
                      <Label styleClass="welcome-subtitle" text="Sistem Point of Sale modern untuk bisnis Anda" />
                   </VBox>
-                  <Label styleClass="welcome-icon" text="📊" />
                </HBox>
             </VBox>
 
