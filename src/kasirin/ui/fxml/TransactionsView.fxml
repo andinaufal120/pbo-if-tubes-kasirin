@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.TransactionsController" styleClass="transactions-container">
+
+    <!-- Header -->
+    <top>
+        <VBox styleClass="page-header" spacing="15.0">
+            <padding>
+                <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <Label text="Point of Sale" styleClass="page-title" HBox.hgrow="ALWAYS" />
+                <Label fx:id="cashierLabel" text="Cashier: John Doe" styleClass="cashier-info" />
+                <Label fx:id="dateTimeLabel" text="Dec 6, 2024 - 14:30" styleClass="datetime-info" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <HBox spacing="20.0">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
+            </padding>
+
+            <!-- Left Panel - Product Selection -->
+            <VBox spacing="20.0" prefWidth="500.0">
+
+                <!-- Search Products -->
+                <VBox styleClass="search-section" spacing="15.0">
+                    <Label text="Search Products" styleClass="section-title" />
+                    <HBox spacing="10.0">
+                        <TextField fx:id="productSearchField" promptText="Search by name or scan barcode..." HBox.hgrow="ALWAYS" styleClass="search-field" />
+                        <Button fx:id="searchProductBtn" text="🔍" onAction="#searchProducts" styleClass="icon-button" />
+                    </HBox>
+                    <ComboBox fx:id="productCategoryFilter" promptText="Filter by category" maxWidth="Infinity" styleClass="filter-combo" />
+                </VBox>
+
+                <!-- Products Grid -->
+                <VBox styleClass="products-section" spacing="15.0" VBox.vgrow="ALWAYS">
+                    <Label text="Available Products" styleClass="section-title" />
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                        <GridPane fx:id="productsGrid" hgap="15.0" vgap="15.0" styleClass="products-grid">
+                            <!-- Products will be dynamically loaded here -->
+                        </GridPane>
+                    </ScrollPane>
+                </VBox>
+            </VBox>
+
+            <!-- Right Panel - Cart and Checkout -->
+            <VBox spacing="20.0" prefWidth="450.0">
+
+                <!-- Cart Section -->
+                <VBox styleClass="cart-section" spacing="15.0" VBox.vgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label text="Shopping Cart" styleClass="section-title" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="clearCartBtn" text="Clear All" onAction="#clearCart" styleClass="secondary-button, small" />
+                    </HBox>
+
+                    <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="cartProductCol" text="Product" prefWidth="150.0" />
+                            <TableColumn fx:id="cartVariationCol" text="Variation" prefWidth="100.0" />
+                            <TableColumn fx:id="cartQtyCol" text="Qty" prefWidth="60.0" />
+                            <TableColumn fx:id="cartPriceCol" text="Price" prefWidth="80.0" />
+                            <TableColumn fx:id="cartTotalCol" text="Total" prefWidth="80.0" />
+                            <TableColumn fx:id="cartActionsCol" text="" prefWidth="40.0" />
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <!-- Total Section -->
+                <VBox styleClass="total-section" spacing="15.0">
+                    <Separator />
+
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Subtotal:" styleClass="total-label" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="subtotalLabel" text="Rp 0" styleClass="total-value" />
+                    </HBox>
+
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Tax (10%):" styleClass="total-label" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="taxLabel" text="Rp 0" styleClass="total-value" />
+                    </HBox>
+
+                    <Separator />
+
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="TOTAL:" styleClass="grand-total-label" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="grandTotalLabel" text="Rp 0" styleClass="grand-total-value" />
+                    </HBox>
+
+                    <!-- Payment Section -->
+                    <VBox spacing="10.0">
+                        <Label text="Payment Amount:" styleClass="payment-label" />
+                        <TextField fx:id="paymentAmountField" promptText="Enter payment amount..." styleClass="payment-field" />
+                        <Label fx:id="changeLabel" text="Change: Rp 0" styleClass="change-label" />
+                    </VBox>
+
+                    <!-- Checkout Button -->
+                    <Button fx:id="checkoutBtn" text="💳 Process Payment" onAction="#processPayment" styleClass="checkout-button" maxWidth="Infinity" />
+                </VBox>
+            </VBox>
+        </HBox>
+    </center>
+</BorderPane>
