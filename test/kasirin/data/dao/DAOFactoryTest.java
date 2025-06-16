@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/// A unit test for DAOFactory class.
+///
+/// @author yamaym
 class DAOFactoryTest {
 
     /// Test if the static method getDAOFactory() is not returning <code>null</code>.

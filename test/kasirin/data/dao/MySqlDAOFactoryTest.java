@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/// A unit test for MySqlDAOFactory class.
+///
+/// @author yamaym
 class MySqlDAOFactoryTest {
     /// Test if the static method getConnection() is not returning <code>null</code>.
     @Test
