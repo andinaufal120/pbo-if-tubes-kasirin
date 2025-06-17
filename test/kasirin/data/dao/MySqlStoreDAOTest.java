@@ -8,6 +8,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/// A unit test for MySqlStoreDAO that will attempt to mimic a CRUD lifecycle.
+///
+/// <p><strong>Note:</strong> it's required to run the unit test class as a whole.</p>
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MySqlStoreDAOTest {
     private static final MySqlStoreDAO mySqlStoreDAO = new MySqlStoreDAO();

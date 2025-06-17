@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/// A unit test for StoreService class.
+///
+/// @author yamaym
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class StoreServiceTest { // TODO: waiting for StoreService final implementation.
     private final static StoreService storeService = new StoreService();
