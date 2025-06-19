@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="dashboard-scroll" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.DashboardController">
+    <VBox spacing="30.0" styleClass="dashboard-container">
+        <padding>
+            <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+        </padding>
+
+        <!-- Header -->
+        <VBox spacing="10.0">
+            <Label styleClass="page-title" text="Dashboard" />
+            <Label fx:id="dateLabel" styleClass="page-subtitle" text="Today, December 6, 2024" />
+        </VBox>
+
+        <!-- Stats Cards -->
+        <GridPane hgap="20.0" vgap="20.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+
+            <!-- Today's Sales -->
+            <VBox spacing="10.0" styleClass="stats-card, sales-card" GridPane.columnIndex="0">
+                <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                <Label styleClass="stats-icon" text="💰" />
+                <Label styleClass="stats-label" text="Today's Sales" />
+                <Label fx:id="todaySalesLabel" styleClass="stats-value" text="Rp 0" />
+            </VBox>
+
+            <!-- Total Transactions -->
+            <VBox spacing="10.0" styleClass="stats-card, transaction-card" GridPane.columnIndex="1">
+                <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                <Label styleClass="stats-icon" text="🧾" />
+                <Label styleClass="stats-label" text="Transactions" />
+                <Label fx:id="transactionCountLabel" styleClass="stats-value" text="0" />
+            </VBox>
+
+            <!-- Products Count -->
+            <VBox spacing="10.0" styleClass="stats-card, product-card" GridPane.columnIndex="2">
+                <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                <Label styleClass="stats-icon" text="📦" />
+                <Label styleClass="stats-label" text="Products" />
+                <Label fx:id="productCountLabel" styleClass="stats-value" text="0" />
+            </VBox>
+         <rowConstraints>
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+
+        <!-- Charts Section -->
+        <HBox spacing="30.0" />
+
+        <!-- Recent Transactions -->
+        <VBox spacing="15.0" styleClass="recent-transactions">
+            <Label styleClass="section-title" text="Recent Transactions" />
+            <TableView fx:id="recentTransactionsTable" prefHeight="250.0">
+                <columns>
+                    <TableColumn fx:id="transactionIdCol" prefWidth="80.0" text="ID" />
+                    <TableColumn fx:id="transactionTimeCol" prefWidth="150.0" text="Time" />
+                    <TableColumn fx:id="transactionTotalCol" prefWidth="120.0" text="Total" />
+                    <TableColumn fx:id="transactionUserCol" prefWidth="150.0" text="Cashier" />
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+   <stylesheets>
+      <URL value="@../css/store-management-styles.css" />
+      <URL value="@../css/styles.css" />
+   </stylesheets>
+</ScrollPane>

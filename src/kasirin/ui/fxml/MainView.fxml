@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="main-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.MainController">
+
+   <!-- Header -->
+   <top>
+      <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header">
+         <padding>
+            <Insets bottom="15.0" left="25.0" right="25.0" top="15.0" />
+         </padding>
+
+         <HBox alignment="CENTER_LEFT" spacing="15.0" HBox.hgrow="ALWAYS">
+            <Label styleClass="app-logo" text="KASIRIN" />
+            <Label fx:id="userInfoLabel" styleClass="user-info" />
+         </HBox>
+
+         <HBox alignment="CENTER_RIGHT" spacing="15.0">
+            <Button fx:id="createStoreButton" onAction="#handleCreateStore" styleClass="success-button" text="+ Buat Toko Baru" />
+            <Button fx:id="logoutButton" onAction="#handleLogout" styleClass="danger-button" text="Keluar" />
+         </HBox>
+      </HBox>
+   </top>
+
+   <!-- Main Content -->
+   <center>
+      <ScrollPane fitToWidth="true" styleClass="main-scroll">
+         <VBox spacing="30.0">
+            <padding>
+               <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+
+            <!-- Welcome Section -->
+            <VBox spacing="15.0" styleClass="welcome-section">
+               <padding>
+                  <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+               </padding>
+               <HBox alignment="CENTER_LEFT" spacing="20.0">
+                  <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                     <Label fx:id="welcomeLabel" styleClass="welcome-title" text="Selamat Datang di Kasirin!" />
+                     <Label styleClass="welcome-subtitle" text="Sistem Point of Sale modern untuk bisnis Anda" />
+                  </VBox>
+               </HBox>
+            </VBox>
+
+            <!-- Menu Grid -->
+            <VBox spacing="20.0" />
+
+            <!-- Store List Section -->
+            <VBox spacing="20.0">
+               <HBox alignment="CENTER_LEFT" spacing="15.0">
+                  <Label prefWidth="92.0" styleClass="section-title" text="Toko Anda" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="storeCountLabel" styleClass="store-count" text="0 toko" />
+               </HBox>
+
+               <VBox fx:id="storeListContainer" spacing="15.0" />
+            </VBox>
+         </VBox>
+      </ScrollPane>
+   </center>
+   <stylesheets>
+      <URL value="@../css/styles.css" />
+      <URL value="@../css/store-management-styles.css" />
+   </stylesheets>
+</BorderPane>
