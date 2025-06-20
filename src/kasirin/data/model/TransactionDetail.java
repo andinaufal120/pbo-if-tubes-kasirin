@@ -6,6 +6,7 @@ package kasirin.data.model;
 public class TransactionDetail {
     /* Instance fields */
     private int id;
+    private int transactionId;
     private int productID;
     private int variationID;
     private int quantity;
@@ -27,6 +28,14 @@ public class TransactionDetail {
     /// <strong>NOTE:</strong> Only used by DAO to return ID to client.
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(int transactionId) {
+        this.transactionId = transactionId;
     }
 
     public int getProductID() {
@@ -59,5 +68,9 @@ public class TransactionDetail {
 
     public void setPricePerUnit(double pricePerUnit) {
         this.pricePerUnit = pricePerUnit;
+    }
+
+    public double getTotalPrice() {
+        return quantity * pricePerUnit;
     }
 }
