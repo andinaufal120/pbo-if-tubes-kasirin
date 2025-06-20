@@ -29,7 +29,7 @@ public class EditProductController implements Initializable {
     @FXML private TextField categoryField;
     @FXML private TextField basePriceField;
     @FXML private TextArea descriptionArea;
-    @FXML private TextField imageUrlField;
+
 
     // Single variation fields
     @FXML private TextField variationTypeField;
@@ -83,7 +83,6 @@ public class EditProductController implements Initializable {
             categoryField.setText(currentProduct.getCategory());
             basePriceField.setText(String.valueOf(currentProduct.getBasePrice()));
             descriptionArea.setText(currentProduct.getDescription() != null ? currentProduct.getDescription() : "");
-            imageUrlField.setText(currentProduct.getImageURL() != null ? currentProduct.getImageURL() : "");
         }
     }
 
@@ -164,13 +163,11 @@ public class EditProductController implements Initializable {
             String category = categoryField.getText().trim();
             double basePrice = Double.parseDouble(basePriceField.getText().trim());
             String description = descriptionArea.getText().trim();
-            String imageUrl = imageUrlField.getText().trim();
 
             currentProduct.setName(name);
             currentProduct.setCategory(category);
             currentProduct.setBasePrice(basePrice);
             currentProduct.setDescription(description);
-            currentProduct.setImageURL(imageUrl);
 
             // Update produk di database
             boolean productUpdated = productService.updateProduct(currentProduct.getId(), currentProduct);

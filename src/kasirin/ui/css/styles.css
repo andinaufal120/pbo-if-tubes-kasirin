@@ -494,4 +494,201 @@
 .variations-table .table-row-cell:selected {
   -fx-background-color: #e3f2fd;
 }
+/* Enhanced styles with role-based access indicators */
+
+/* Existing styles... */
+.root {
+  -fx-font-family: "Segoe UI", Arial, sans-serif;
+  -fx-font-size: 14px;
+}
+
+/* Button styles */
+.button {
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+  -fx-padding: 8px 16px;
+  -fx-cursor: hand;
+}
+
+.button:hover {
+  -fx-background-color: #2980b9;
+}
+
+.button:disabled {
+  -fx-background-color: #bdc3c7;
+  -fx-text-fill: #7f8c8d;
+  -fx-cursor: default;
+}
+
+/* Danger button for delete actions */
+.danger-button {
+  -fx-background-color: #e74c3c;
+}
+
+.danger-button:hover {
+  -fx-background-color: #c0392b;
+}
+
+/* Small buttons for table actions */
+.small-button {
+  -fx-padding: 4px 8px;
+  -fx-font-size: 12px;
+}
+
+/* Role-based access styles */
+.access-denied-label {
+  -fx-text-fill: #e74c3c;
+  -fx-font-size: 16px;
+  -fx-text-alignment: center;
+  -fx-padding: 20px;
+  -fx-background-color: #fdf2f2;
+  -fx-border-color: #e74c3c;
+  -fx-border-width: 2px;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+/* Locked button style for staff users */
+.button:disabled.locked {
+  -fx-background-color: #95a5a6;
+  -fx-text-fill: #2c3e50;
+}
+
+/* Change indicators for reports */
+.positive-change {
+  -fx-text-fill: #27ae60;
+  -fx-font-weight: bold;
+}
+
+.negative-change {
+  -fx-text-fill: #e74c3c;
+  -fx-font-weight: bold;
+}
+
+.neutral-change {
+  -fx-text-fill: #7f8c8d;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+  -fx-background-color: white;
+  -fx-border-color: #ecf0f1;
+  -fx-border-width: 1px;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+  -fx-padding: 20px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.dashboard-card-title {
+  -fx-font-size: 14px;
+  -fx-text-fill: #7f8c8d;
+  -fx-font-weight: normal;
+}
+
+.dashboard-card-value {
+  -fx-font-size: 24px;
+  -fx-text-fill: #2c3e50;
+  -fx-font-weight: bold;
+}
+
+/* Table styles */
+.table-view {
+  -fx-background-color: white;
+  -fx-border-color: #ecf0f1;
+  -fx-border-width: 1px;
+}
+
+.table-view .column-header {
+  -fx-background-color: #f8f9fa;
+  -fx-text-fill: #2c3e50;
+  -fx-font-weight: bold;
+}
+
+.table-row-cell:selected {
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
+}
+
+/* Chart styles */
+.chart {
+  -fx-background-color: white;
+  -fx-border-color: #ecf0f1;
+  -fx-border-width: 1px;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+}
+
+/* Form styles */
+.text-field,
+.text-area,
+.combo-box,
+.date-picker {
+  -fx-border-color: #bdc3c7;
+  -fx-border-width: 1px;
+  -fx-border-radius: 4px;
+  -fx-background-radius: 4px;
+  -fx-padding: 8px;
+}
+
+.text-field:focused,
+.text-area:focused,
+.combo-box:focused,
+.date-picker:focused {
+  -fx-border-color: #3498db;
+  -fx-border-width: 2px;
+}
+
+/* Alert and info styles */
+.alert .header-panel {
+  -fx-background-color: #3498db;
+}
+
+.alert .header-panel .label {
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+
+/* Empty message style */
+.empty-message {
+  -fx-text-fill: #7f8c8d;
+  -fx-font-style: italic;
+  -fx-text-alignment: center;
+  -fx-padding: 20px;
+}
+
+/* Role indicator badges */
+.role-badge {
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
+  -fx-padding: 4px 8px;
+  -fx-border-radius: 12px;
+  -fx-background-radius: 12px;
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+}
+
+.role-badge.admin {
+  -fx-background-color: #e67e22;
+}
+
+.role-badge.owner {
+  -fx-background-color: #8e44ad;
+}
+
+.role-badge.staff {
+  -fx-background-color: #27ae60;
+}
+
+/* Disabled section styles */
+.disabled-section {
+  -fx-opacity: 0.5;
+}
+
+.disabled-section .button {
+  -fx-cursor: not-allowed;
+}
+
 

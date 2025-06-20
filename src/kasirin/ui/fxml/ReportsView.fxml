@@ -26,8 +26,8 @@
 
             <HBox alignment="CENTER_LEFT" spacing="20.0">
                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <Label styleClass="page-title" text="Laporan Penjualan" />
-                    <Label styleClass="page-subtitle" text="Analisis kinerja dan transaksi toko Anda" />
+                    <Label styleClass="page-title" text="📊 Laporan Penjualan Komprehensif" />
+                    <Label styleClass="page-subtitle" text="Analisis mendalam dari data transaksi dan detail penjualan" />
                 </VBox>
             </HBox>
         </VBox>
@@ -41,79 +41,85 @@
                     <Insets bottom="30.0" left="30.0" right="30.0" top="20.0" />
                 </padding>
 
-                <!-- Summary Cards -->
+                <!-- Enhanced Summary Cards -->
                 <GridPane hgap="20.0" vgap="20.0">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
 
                     <!-- Total Revenue -->
-                    <VBox spacing="10.0" styleClass="report-card, revenue-card" GridPane.columnIndex="0">
+                    <VBox spacing="10.0" styleClass="report-card, revenue-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                         <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                         <Label styleClass="report-icon" text="💰" />
-                        <Label styleClass="report-label" text="Total Revenue" />
+                        <Label styleClass="report-label" text="Total Pendapatan" />
                         <Label fx:id="totalRevenueLabel" styleClass="report-value" text="Rp 0" />
-                        <Label fx:id="revenueChangeLabel" styleClass="report-change" text="+0% from last period" />
+                        <Label fx:id="revenueChangeLabel" styleClass="report-change" text="Data periode saat ini" />
                     </VBox>
 
                     <!-- Total Transactions -->
-                    <VBox spacing="10.0" styleClass="report-card, transaction-card" GridPane.columnIndex="1">
+                    <VBox spacing="10.0" styleClass="report-card, transaction-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                         <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                         <Label styleClass="report-icon" text="🧾" />
-                        <Label styleClass="report-label" text="Transactions" />
+                        <Label styleClass="report-label" text="Total Transaksi" />
                         <Label fx:id="totalTransactionsLabel" styleClass="report-value" text="0" />
-                        <Label fx:id="transactionChangeLabel" styleClass="report-change" text="+0% from last period" />
+                        <Label fx:id="transactionChangeLabel" styleClass="report-change" text="Data periode saat ini" />
                     </VBox>
 
-                    <!-- Top Product -->
-                    <VBox spacing="10.0" styleClass="report-card, product-card" GridPane.columnIndex="2">
-                        <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
-                        <Label styleClass="report-icon" text="🏆" />
-                        <Label styleClass="report-label" text="Top Product" />
-                        <Label fx:id="topProductLabel" styleClass="report-value, small-text" text="-" />
-                        <Label fx:id="topProductSalesLabel" styleClass="report-change" text="0 sold" />
+                       <!-- Total Items Sold -->
+                    <VBox spacing="10.0" styleClass="report-card, items-card" GridPane.columnIndex="2">
+                        <padding>
+                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                  </padding>
+                        <Label styleClass="report-icon" text="📦" />
+                        <Label styleClass="report-label" text="Total Item Terjual" />
+                        <Label fx:id="totalItemsLabel" styleClass="report-value" text="0" />
                     </VBox>
-               <rowConstraints>
-                  <RowConstraints />
-               </rowConstraints>
                 </GridPane>
 
-                <!-- Charts Section -->
-                <HBox spacing="30.0" />
+                <!-- Detailed Tables Section -->
+                <HBox prefHeight="400.0" spacing="30.0">
+                    <!-- Itemized Sales Table -->
+                    <VBox spacing="15.0" styleClass="table-section" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <Label styleClass="section-title" text="📋 Penjualan per Produk" HBox.hgrow="ALWAYS" />
+                            <TextField fx:id="searchField" prefWidth="200.0" promptText="Cari produk..." styleClass="search-field" />
+                            <Button fx:id="searchBtn" onAction="#searchItems" styleClass="icon-button" text="🔍" />
+                        </HBox>
 
-                <!-- Detailed Transactions Table -->
-                <VBox spacing="15.0" styleClass="transactions-table-section">
-                    <HBox alignment="CENTER_LEFT" spacing="15.0">
-                        <Label styleClass="section-title" text="Transaction Details" HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="transactionSearchField" prefWidth="250.0" promptText="Search transactions..." styleClass="search-field" />
-                        <Button fx:id="searchTransactionBtn" onAction="#searchTransactions" styleClass="icon-button" text="🔍" />
-                    </HBox>
+                        <TableView fx:id="itemizedTable" prefHeight="350.0" prefWidth="649.0" styleClass="itemized-table">
+                            <columns>
+                                <TableColumn fx:id="productNameCol" prefWidth="150.0" text="Nama Produk" />
+                                <TableColumn fx:id="categoryCol" prefWidth="100.0" text="Kategori" />
+                                <TableColumn fx:id="quantityCol" prefWidth="80.0" text="Qty" />
+                                <TableColumn fx:id="revenueCol" prefWidth="120.0" text="Pendapatan" />
+                                <TableColumn fx:id="transactionsCol" prefWidth="80.0" text="Transaksi" />
+                                <TableColumn fx:id="avgPriceCol" prefWidth="100.0" text="Harga Rata-rata" />
+                            </columns>
+                        </TableView>
 
-                    <TableView fx:id="transactionsTable" prefHeight="400.0">
-                        <columns>
-                            <TableColumn fx:id="transactionIdCol" prefWidth="120.0" text="Transaction ID" />
-                            <TableColumn fx:id="transactionDateCol" prefWidth="150.0" text="Date n Time" />
-                            <TableColumn fx:id="transactionCashierCol" prefWidth="120.0" text="Cashier" />
-                            <TableColumn fx:id="transactionItemsCol" prefWidth="80.0" text="Items" />
-                            <TableColumn fx:id="transactionTotalCol" prefWidth="120.0" text="Total Amount" />
-                            <TableColumn fx:id="transactionActionsCol" prefWidth="100.0" text="Actions" />
-                        </columns>
-                    </TableView>
+                        <!-- Pagination -->
+                        <HBox alignment="CENTER" spacing="10.0" styleClass="pagination-container">
+                            <Button fx:id="prevPageBtn" onAction="#previousPage" styleClass="pagination-button" text="← Sebelumnya" />
+                            <Label fx:id="pageInfoLabel" styleClass="page-info" text="Halaman 1 dari 1" />
+                            <Button fx:id="nextPageBtn" onAction="#nextPage" styleClass="pagination-button" text="Selanjutnya →" />
+                        </HBox>
+                    </VBox>
 
-                    <!-- Pagination -->
-                    <HBox alignment="CENTER" spacing="10.0">
-                        <Button fx:id="prevPageBtn" onAction="#previousPage" styleClass="pagination-button" text="← Previous" />
-                        <Label fx:id="pageInfoLabel" styleClass="page-info" text="Page 1 of 1" />
-                        <Button fx:id="nextPageBtn" onAction="#nextPage" styleClass="pagination-button" text="Next →" />
-                    </HBox>
-                </VBox>
+                    <!-- Cashier Performance Table -->
+                    <VBox prefWidth="400.0" spacing="15.0" styleClass="table-section" />
+                </HBox>
             </VBox>
         </ScrollPane>
     </center>
-   <stylesheets>
-      <URL value="@../css/styles.css" />
-      <URL value="@../css/store-management-styles.css" />
-   </stylesheets>
+
+    <stylesheets>
+        <URL value="@../css/styles.css" />
+        <URL value="@../css/store-management-styles.css" />
+    </stylesheets>
 </BorderPane>

@@ -28,7 +28,6 @@ public class AddProductController implements Initializable {
     @FXML private TextField categoryField;
     @FXML private TextField basePriceField;
     @FXML private TextArea descriptionArea;
-    @FXML private TextField imageUrlField;
 
     // Single variation fields
     @FXML private TextField variationTypeField;
@@ -120,8 +119,7 @@ public class AddProductController implements Initializable {
             String category = categoryField.getText().trim();
             double basePrice = Double.parseDouble(basePriceField.getText().trim());
             String description = descriptionArea.getText().trim();
-            String imageUrl = imageUrlField.getText().trim();
-
+            String imageUrl = null;
             // Buat objek produk baru
             Product product = new Product(name, currentStore.getId(), category, basePrice, description, imageUrl);
 

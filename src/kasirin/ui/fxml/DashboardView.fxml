@@ -2,6 +2,10 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -13,71 +17,116 @@
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane fitToWidth="true" styleClass="dashboard-scroll" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.DashboardController">
-    <VBox spacing="30.0" styleClass="dashboard-container">
+    <VBox spacing="25.0" styleClass="dashboard-container">
         <padding>
             <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
         </padding>
 
-        <!-- Header -->
-        <VBox spacing="10.0">
-            <Label styleClass="page-title" text="Dashboard" />
-            <Label fx:id="dateLabel" styleClass="page-subtitle" text="Today, December 6, 2024" />
+        <!-- Welcome Header -->
+        <VBox spacing="15.0" styleClass="welcome-header">
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="welcomeLabel" styleClass="welcome-title" text="Selamat Datang!" />
+                    <Label fx:id="dateLabel" styleClass="welcome-subtitle" text="Hari ini, 6 Desember 2024" />
+                </VBox>
+                <VBox alignment="CENTER_RIGHT" spacing="5.0">
+                    <Label fx:id="storeNameLabel" styleClass="store-name" text="Nama Toko" />
+                    <Label fx:id="userRoleLabel" styleClass="user-role" text="Administrator" />
+                </VBox>
+            </HBox>
         </VBox>
 
-        <!-- Stats Cards -->
-        <GridPane hgap="20.0" vgap="20.0">
+        <!-- Quick Stats Cards -->
+        <GridPane hgap="20.0" styleClass="stats-grid" vgap="20.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
 
             <!-- Today's Sales -->
-            <VBox spacing="10.0" styleClass="stats-card, sales-card" GridPane.columnIndex="0">
+            <VBox spacing="10.0" styleClass="stats-card, sales-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                 <Label styleClass="stats-icon" text="💰" />
-                <Label styleClass="stats-label" text="Today's Sales" />
+                <Label styleClass="stats-label" text="Penjualan Hari Ini" />
                 <Label fx:id="todaySalesLabel" styleClass="stats-value" text="Rp 0" />
             </VBox>
 
             <!-- Total Transactions -->
-            <VBox spacing="10.0" styleClass="stats-card, transaction-card" GridPane.columnIndex="1">
+            <VBox spacing="10.0" styleClass="stats-card, transaction-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                 <Label styleClass="stats-icon" text="🧾" />
-                <Label styleClass="stats-label" text="Transactions" />
+                <Label styleClass="stats-label" text="Transaksi Hari Ini" />
                 <Label fx:id="transactionCountLabel" styleClass="stats-value" text="0" />
             </VBox>
 
             <!-- Products Count -->
-            <VBox spacing="10.0" styleClass="stats-card, product-card" GridPane.columnIndex="2">
+            <VBox spacing="10.0" styleClass="stats-card, product-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
                 <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
                 <Label styleClass="stats-icon" text="📦" />
-                <Label styleClass="stats-label" text="Products" />
+                <Label styleClass="stats-label" text="Total Produk" />
                 <Label fx:id="productCountLabel" styleClass="stats-value" text="0" />
             </VBox>
-         <rowConstraints>
-            <RowConstraints />
-         </rowConstraints>
+
+            <!-- Quick Actions -->
+            <VBox spacing="10.0" styleClass="stats-card, action-card" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                <padding><Insets bottom="15.0" left="20.0" right="20.0" top="15.0" /></padding>
+                <Label styleClass="stats-label" text="Aksi Cepat" />
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Button fx:id="quickSaleBtn" onAction="#quickSale" styleClass="quick-action-btn" text="💰 Transaksi" />
+                    <Button fx:id="viewReportsBtn" onAction="#viewReports" styleClass="quick-action-btn" text="📊 Laporan" />
+                    <Button fx:id="manageProductsBtn" onAction="#manageProducts" styleClass="quick-action-btn" text="📦 Produk" />
+                    <Button fx:id="refreshBtn" onAction="#refreshDashboard" styleClass="quick-action-btn" text="🔄 Refresh" />
+                </HBox>
+            </VBox>
         </GridPane>
 
         <!-- Charts Section -->
-        <HBox spacing="30.0" />
+        <HBox prefHeight="350.0" spacing="30.0" />
+
+        <!-- Information Panels -->
+        <HBox prefHeight="300.0" spacing="30.0">
+            <!-- Top Products -->
+            <VBox spacing="15.0" styleClass="info-panel" HBox.hgrow="ALWAYS" />
+
+            <!-- Low Stock Alert -->
+            <VBox spacing="15.0" styleClass="info-panel" HBox.hgrow="ALWAYS" />
+        </HBox>
 
         <!-- Recent Transactions -->
-        <VBox spacing="15.0" styleClass="recent-transactions">
-            <Label styleClass="section-title" text="Recent Transactions" />
-            <TableView fx:id="recentTransactionsTable" prefHeight="250.0">
+        <VBox spacing="15.0" styleClass="transactions-section">
+            <Label styleClass="section-title" text="📋 Transaksi Terbaru" />
+            <TableView fx:id="recentTransactionsTable" prefHeight="200.0" styleClass="transactions-table">
                 <columns>
-                    <TableColumn fx:id="transactionIdCol" prefWidth="80.0" text="ID" />
-                    <TableColumn fx:id="transactionTimeCol" prefWidth="150.0" text="Time" />
+                    <TableColumn fx:id="transactionIdCol" prefWidth="120.0" text="ID Transaksi" />
+                    <TableColumn fx:id="transactionTimeCol" prefWidth="150.0" text="Waktu" />
                     <TableColumn fx:id="transactionTotalCol" prefWidth="120.0" text="Total" />
-                    <TableColumn fx:id="transactionUserCol" prefWidth="150.0" text="Cashier" />
+                    <TableColumn fx:id="transactionUserCol" prefWidth="150.0" text="Kasir" />
                 </columns>
             </TableView>
         </VBox>
+
+        <!-- Weekly Comparison Chart -->
+        <VBox spacing="15.0" styleClass="chart-container">
+            <Label styleClass="chart-title" text="📊 Perbandingan Mingguan" />
+            <BarChart fx:id="weeklyChart" prefHeight="250.0" styleClass="weekly-chart">
+                <xAxis>
+                    <CategoryAxis side="BOTTOM" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" />
+                </yAxis>
+            </BarChart>
+        </VBox>
     </VBox>
-   <stylesheets>
-      <URL value="@../css/store-management-styles.css" />
-      <URL value="@../css/styles.css" />
-   </stylesheets>
+
+    <stylesheets>
+        <URL value="@../css/store-management-styles.css" />
+        <URL value="@../css/styles.css" />
+    </stylesheets>
 </ScrollPane>
