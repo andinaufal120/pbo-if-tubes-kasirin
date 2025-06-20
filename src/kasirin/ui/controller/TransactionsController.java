@@ -23,6 +23,8 @@ import kasirin.service.TransactionService.TransactionItem;
 import kasirin.service.TransactionService.TransactionResult;
 import kasirin.service.TransactionService.TransactionException;
 import kasirin.ui.util.AlertUtil;
+import kasirin.data.dao.DAOFactory;
+import kasirin.data.dao.ProductVariationDAO;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -30,10 +32,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Optional;
 
 /**
- * Enhanced controller for the Transactions/POS View
- * Handles point of sale operations with improved error handling and validation
+ * Simplified controller for the Transactions/POS View
+ * Handles point of sale operations with simplified product variation handling
  *
  * @author yamaym
  */
@@ -67,6 +70,7 @@ public class TransactionsController implements Initializable {
     private Store currentStore;
     private ProductService productService;
     private TransactionService transactionService;
+    private ProductVariationDAO productVariationDAO;
     private ObservableList<CartItem> cartItems;
     private List<Product> availableProducts;
     private double subtotal = 0.0;
@@ -77,6 +81,7 @@ public class TransactionsController implements Initializable {
         try {
             productService = new ProductService();
             transactionService = new TransactionService();
+            productVariationDAO = DAOFactory.getDAOFactory(DAOFactory.MYSQL).getProductVariationDAO();
             cartItems = FXCollections.observableArrayList();
 
             setupDateTime();
@@ -281,7 +286,7 @@ public class TransactionsController implements Initializable {
     }
 
     /**
-     * Display products in grid with improved layout
+     * Display products in grid with simplified layout (one card per product)
      */
     private void displayProducts(List<Product> products) {
         productsGrid.getChildren().clear();
@@ -298,45 +303,102 @@ public class TransactionsController implements Initializable {
         int maxCols = 4;
 
         for (Product product : products) {
-            VBox productCard = createProductCard(product);
-            productsGrid.add(productCard, col, row);
+            try {
+                // Get the single variation for this product
+                List<ProductVariation> variations = productVariationDAO.findVariationsByProductId(product.getId());
+                ProductVariation variation = variations.isEmpty() ? null : variations.get(0);
 
-            col++;
-            if (col >= maxCols) {
-                col = 0;
-                row++;
+                VBox productCard = createProductCard(product, variation);
+                productsGrid.add(productCard, col, row);
+
+                col++;
+                if (col >= maxCols) {
+                    col = 0;
+                    row++;
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading variation for product " + product.getName() + ": " + e.getMessage());
+                // Fallback: show product without variations
+                VBox productCard = createProductCard(product, null);
+                productsGrid.add(productCard, col, row);
+
+                col++;
+                if (col >= maxCols) {
+                    col = 0;
+                    row++;
+                }
             }
         }
     }
 
     /**
-     * Create enhanced product card for display
+     * Create simplified product card for display
      */
-    private VBox createProductCard(Product product) {
-        VBox card = new VBox(10);
+    private VBox createProductCard(Product product, ProductVariation variation) {
+        VBox card = new VBox(8);
         card.getStyleClass().add("product-card");
         card.setAlignment(Pos.CENTER);
-        card.setPadding(new Insets(15));
-        card.setPrefWidth(150);
-        card.setPrefHeight(120);
+        card.setPadding(new Insets(12));
+        card.setPrefWidth(140);
+        card.setPrefHeight(130);
 
+        // Product name
         Label nameLabel = new Label(product.getName());
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
         nameLabel.setWrapText(true);
-        nameLabel.setMaxWidth(130);
+        nameLabel.setMaxWidth(120);
 
+        // Category
         Label categoryLabel = new Label(product.getCategory());
-        categoryLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        categoryLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
 
-        Label priceLabel = new Label(String.format("Rp %,.0f", product.getBasePrice()));
-        priceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #059669;");
+        // Variation info (if exists)
+        Label variationLabel = null;
+        if (variation != null) {
+            variationLabel = new Label(variation.getValue());
+            variationLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #2563eb; -fx-font-weight: bold;");
+            variationLabel.setWrapText(true);
+            variationLabel.setMaxWidth(120);
+        }
 
-        card.getChildren().addAll(nameLabel, categoryLabel, priceLabel);
+        // Price calculation
+        double displayPrice = product.getBasePrice();
+        if (variation != null) {
+            displayPrice += variation.getAdditionalPrice();
+        }
+
+        Label priceLabel = new Label(String.format("Rp %,.0f", displayPrice));
+        priceLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #059669; -fx-font-size: 12px;");
+
+        // Stock info (if variation exists)
+        Label stockLabel = null;
+        if (variation != null) {
+            stockLabel = new Label("Stock: " + variation.getStocks());
+            stockLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: " +
+                    (variation.getStocks() > 0 ? "#059669" : "#ef4444") + ";");
+        }
+
+        // Add components to card
+        card.getChildren().addAll(nameLabel, categoryLabel);
+        if (variationLabel != null) {
+            card.getChildren().add(variationLabel);
+        }
+        card.getChildren().add(priceLabel);
+        if (stockLabel != null) {
+            card.getChildren().add(stockLabel);
+        }
 
         // Add click handler with visual feedback
         card.setOnMouseClicked(event -> {
+            // Check stock availability
+            if (variation != null && variation.getStocks() <= 0) {
+                AlertUtil.showWarning("Out of Stock",
+                        product.getName() + " is out of stock.");
+                return;
+            }
+
             card.setStyle("-fx-background-color: #e3f2fd;");
-            showProductVariations(product);
+            showQuantityDialog(product, variation);
 
             // Reset style after short delay
             PauseTransition pause = new PauseTransition(Duration.millis(200));
@@ -348,30 +410,73 @@ public class TransactionsController implements Initializable {
     }
 
     /**
-     * Show product variations dialog or add directly if no variations
+     * Show quantity input dialog for adding product to cart
      */
-    private void showProductVariations(Product product) {
+    private void showQuantityDialog(Product product, ProductVariation variation) {
         try {
-            // Show quantity input dialog
-            TextInputDialog dialog = new TextInputDialog("1");
+            // Create custom dialog
+            Dialog<Integer> dialog = new Dialog<>();
             dialog.setTitle("Add to Cart");
             dialog.setHeaderText("Add " + product.getName() + " to cart");
-            dialog.setContentText("Quantity:");
 
-            dialog.showAndWait().ifPresent(result -> {
-                try {
-                    int quantity = Integer.parseInt(result);
-                    if (quantity > 0) {
-                        addToCart(product, null, quantity);
-                    } else {
-                        AlertUtil.showWarning("Invalid Quantity", "Quantity must be greater than 0");
-                    }
-                } catch (NumberFormatException e) {
-                    AlertUtil.showError("Invalid Input", "Please enter a valid number");
+            // Set dialog content
+            VBox content = new VBox(10);
+            content.setPadding(new Insets(20));
+
+            // Product info
+            Label productInfo = new Label("Product: " + product.getName());
+            productInfo.setStyle("-fx-font-weight: bold;");
+
+            if (variation != null) {
+                Label variationInfo = new Label("Type: " + variation.getValue());
+                variationInfo.setStyle("-fx-text-fill: #2563eb;");
+                content.getChildren().add(variationInfo);
+
+                Label stockInfo = new Label("Available Stock: " + variation.getStocks());
+                stockInfo.setStyle("-fx-text-fill: " + (variation.getStocks() > 0 ? "#059669" : "#ef4444") + ";");
+                content.getChildren().add(stockInfo);
+            }
+
+            double price = product.getBasePrice() + (variation != null ? variation.getAdditionalPrice() : 0);
+            Label priceInfo = new Label("Price: Rp " + String.format("%,.0f", price));
+            priceInfo.setStyle("-fx-font-weight: bold; -fx-text-fill: #059669;");
+
+            // Quantity input
+            Label qtyLabel = new Label("Quantity:");
+            Spinner<Integer> quantitySpinner = new Spinner<>(1,
+                    variation != null ? variation.getStocks() : 999, 1);
+            quantitySpinner.setEditable(true);
+            quantitySpinner.setPrefWidth(100);
+
+            content.getChildren().addAll(productInfo, priceInfo, qtyLabel, quantitySpinner);
+            dialog.getDialogPane().setContent(content);
+
+            // Add buttons
+            ButtonType addButtonType = new ButtonType("Add to Cart", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
+
+            // Convert result
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == addButtonType) {
+                    return quantitySpinner.getValue();
+                }
+                return null;
+            });
+
+            // Show dialog and handle result
+            Optional<Integer> result = dialog.showAndWait();
+            result.ifPresent(quantity -> {
+                if (quantity > 0) {
+                    addToCart(product, variation, quantity);
+                } else {
+                    AlertUtil.showWarning("Invalid Quantity", "Quantity must be greater than 0");
                 }
             });
+
         } catch (Exception e) {
-            AlertUtil.showError("Product Selection Error", "Failed to add product to cart: " + e.getMessage());
+            System.err.println("Error showing quantity dialog: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtil.showError("Dialog Error", "Failed to show quantity dialog: " + e.getMessage());
         }
     }
 
@@ -387,20 +492,26 @@ public class TransactionsController implements Initializable {
                 return;
             }
 
+            // Check stock for variations
+            if (variation != null && variation.getStocks() < quantity) {
+                AlertUtil.showWarning("Insufficient Stock",
+                        String.format("Only %d items available for %s",
+                                variation.getStocks(), product.getName()));
+                return;
+            }
+
             double pricePerUnit = product.getBasePrice();
-            String variationInfo = "Default";
-            int variationId = 0; // Default variation
+            String variationInfo = "Standard";
 
             if (variation != null) {
                 pricePerUnit += variation.getAdditionalPrice();
-                variationInfo = variation.getType() + ": " + variation.getValue();
-                variationId = variation.getId();
+                variationInfo = variation.getValue();
             }
 
-            // Check if item already exists in cart
+            // Check if item already exists in cart (simplified - only check product ID)
             CartItem existingItem = null;
             for (CartItem item : cartItems) {
-                if (item.getProductId() == product.getId() && item.getVariationId() == variationId) {
+                if (item.getProductId() == product.getId()) {
                     existingItem = item;
                     break;
                 }
@@ -409,13 +520,21 @@ public class TransactionsController implements Initializable {
             if (existingItem != null) {
                 // Update quantity of existing item
                 int newQuantity = existingItem.getQuantity() + quantity;
+
+                // Check total quantity against stock
+                if (variation != null && variation.getStocks() < newQuantity) {
+                    AlertUtil.showWarning("Insufficient Stock",
+                            String.format("Cannot add %d more items. Only %d total available for %s",
+                                    quantity, variation.getStocks(), product.getName()));
+                    return;
+                }
+
                 System.out.println("Updating existing cart item quantity: " + existingItem.getQuantity() + " -> " + newQuantity);
                 existingItem.setQuantity(newQuantity);
             } else {
                 // Add new item to cart
                 CartItem newItem = new CartItem(
                         product.getId(),
-                        variationId,
                         product.getName(),
                         variationInfo,
                         quantity,
@@ -600,7 +719,7 @@ public class TransactionsController implements Initializable {
             checkoutBtn.setText("Processing...");
             checkoutBtn.setDisable(true);
 
-            // Convert cart items to transaction items with detailed logging
+            // Convert cart items to transaction items (simplified - only product ID)
             List<TransactionItem> transactionItems = new ArrayList<>();
             System.out.println("Converting " + cartItems.size() + " cart items to transaction items:");
 
@@ -608,9 +727,9 @@ public class TransactionsController implements Initializable {
                 CartItem cartItem = cartItems.get(i);
                 System.out.println("Cart item " + (i + 1) + ": " + cartItem);
 
+                // Simplified: only use product ID, no variation ID
                 TransactionItem transactionItem = new TransactionItem(
                         cartItem.getProductId(),
-                        cartItem.getVariationId(),
                         cartItem.getQuantity(),
                         cartItem.getPricePerUnit()
                 );
@@ -660,6 +779,9 @@ public class TransactionsController implements Initializable {
             cartItems.clear();
             paymentAmountField.clear();
 
+            // Refresh product display to update stock counts
+            loadProducts();
+
             System.out.println("Transaction completed successfully: " + result);
             System.out.println("=== Payment Processing Complete ===");
 
@@ -683,20 +805,18 @@ public class TransactionsController implements Initializable {
     }
 
     /**
-     * Enhanced CartItem class with validation
+     * Simplified CartItem class without variation ID
      */
     public static class CartItem {
         private int productId;
-        private int variationId;
         private String productName;
         private String variationInfo;
         private int quantity;
         private double pricePerUnit;
 
-        public CartItem(int productId, int variationId, String productName, String variationInfo,
+        public CartItem(int productId, String productName, String variationInfo,
                         int quantity, double pricePerUnit) {
             this.productId = productId;
-            this.variationId = variationId;
             this.productName = productName;
             this.variationInfo = variationInfo;
             this.quantity = quantity;
@@ -705,7 +825,6 @@ public class TransactionsController implements Initializable {
 
         // Getters
         public int getProductId() { return productId; }
-        public int getVariationId() { return variationId; }
         public String getProductName() { return productName; }
         public String getVariationInfo() { return variationInfo; }
         public int getQuantity() { return quantity; }
@@ -727,8 +846,8 @@ public class TransactionsController implements Initializable {
 
         @Override
         public String toString() {
-            return String.format("CartItem{productId=%d, variationId=%d, name='%s', variation='%s', qty=%d, price=%.2f, total=%.2f}",
-                    productId, variationId, productName, variationInfo, quantity, pricePerUnit, getTotalPrice());
+            return String.format("CartItem{productId=%d, name='%s', variation='%s', qty=%d, price=%.2f, total=%.2f}",
+                    productId, productName, variationInfo, quantity, pricePerUnit, getTotalPrice());
         }
     }
 }

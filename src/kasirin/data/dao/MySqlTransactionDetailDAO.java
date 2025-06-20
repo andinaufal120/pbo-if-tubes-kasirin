@@ -71,8 +71,14 @@ public class MySqlTransactionDetailDAO implements TransactionDetailDAO {
             stmt.setInt(2, transactionDetail.getProductID());
             System.out.println("Parameter 2 (products_id): " + transactionDetail.getProductID());
 
-            stmt.setInt(3, transactionDetail.getVariationID());
-            System.out.println("Parameter 3 (variation_id): " + transactionDetail.getVariationID());
+            // Handle variation_id - set to NULL if 0 (no variation)
+            if (transactionDetail.getVariationID() == 0) {
+                stmt.setNull(3, java.sql.Types.INTEGER);
+                System.out.println("Parameter 3 (variation_id): NULL (no variation)");
+            } else {
+                stmt.setInt(3, transactionDetail.getVariationID());
+                System.out.println("Parameter 3 (variation_id): " + transactionDetail.getVariationID());
+            }
 
             stmt.setInt(4, transactionDetail.getQuantity());
             System.out.println("Parameter 4 (quantity): " + transactionDetail.getQuantity());

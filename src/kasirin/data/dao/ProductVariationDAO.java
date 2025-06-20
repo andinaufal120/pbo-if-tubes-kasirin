@@ -37,4 +37,10 @@ public interface ProductVariationDAO {
     ///
     /// @return a list of "Product Variation" transfer objects
     public List<ProductVariation> findAllProductVariations();
+
+    /// Finds all product variations for a specific product.
+    ///
+    /// @param productId product ID to search variations for
+    /// @return a list of "Product Variation" transfer objects for the specified product
+    public List<ProductVariation> findVariationsByProductId(int productId);
 }

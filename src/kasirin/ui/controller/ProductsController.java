@@ -52,12 +52,13 @@ public class ProductsController implements Initializable {
     @FXML private Label detailBasePriceLabel;
     @FXML private Label detailDescriptionLabel;
 
-    @FXML private TableView<Object> variationsTable;
-    @FXML private TableColumn<Object, String> variationTypeCol;
-    @FXML private TableColumn<Object, String> variationValueCol;
-    @FXML private TableColumn<Object, String> variationStockCol;
-    @FXML private TableColumn<Object, String> variationPriceCol;
-    @FXML private TableColumn<Object, String> variationActionsCol;
+    @FXML private TableView<ProductVariation> variationsTable;
+    @FXML private TableColumn<ProductVariation, String> variationTypeCol;
+    @FXML private TableColumn<ProductVariation, String> variationValueCol;
+    @FXML private TableColumn<ProductVariation, String> variationStockCol;
+    @FXML private TableColumn<ProductVariation, String> variationPriceCol;
+    @FXML private TableColumn<ProductVariation, String> variationActionsCol;
+
 
     @FXML private Button addVariationBtn;
     @FXML private Button editProductBtn;

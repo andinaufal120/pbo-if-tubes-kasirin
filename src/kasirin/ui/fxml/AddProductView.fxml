@@ -18,7 +18,7 @@
             <!-- Header -->
             <VBox alignment="CENTER" spacing="10.0">
                 <Label text="Add New Product" styleClass="title" />
-                <Label text="Create a new product with variations for your store" styleClass="subtitle" />
+                <Label text="Create a new product with single variation for your store" styleClass="subtitle" />
             </VBox>
 
             <!-- Product Information Section -->
@@ -48,70 +48,46 @@
                         <TextArea fx:id="descriptionArea" promptText="Enter product description (optional)" prefRowCount="3" styleClass="text-area" wrapText="true" />
                     </VBox>
 
-                    <VBox spacing="6.0">
-                        <Label text="Image URL" styleClass="field-label" />
-                        <TextField fx:id="imageUrlField" promptText="Enter image URL (optional)" styleClass="text-field" />
-                    </VBox>
+
                 </VBox>
             </VBox>
 
             <Separator />
 
-            <!-- Product Variations Section -->
+            <!-- Product Variation Section -->
             <VBox spacing="20.0">
-                <Label text="Product Variations" styleClass="section-title" />
+                <Label text="Product Variation" styleClass="section-title" />
 
-                <!-- Add Variation Form -->
                 <VBox spacing="15.0" styleClass="variation-form">
                     <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                     </padding>
 
-                    <Label text="Add Variation" styleClass="subsection-title" />
+                    <Label text="Single Variation Details" styleClass="subsection-title" />
 
-                    <HBox spacing="10.0">
+                    <HBox spacing="15.0">
                         <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                            <Label text="Type *" styleClass="field-label-small" />
-                            <TextField fx:id="variationTypeField" promptText="e.g., Size, Color" styleClass="text-field-small" />
+                            <Label text="Type *" styleClass="field-label" />
+                            <TextField fx:id="variationTypeField" promptText="e.g., Size, Flavor" styleClass="text-field" />
                         </VBox>
 
                         <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                            <Label text="Value *" styleClass="field-label-small" />
-                            <TextField fx:id="variationValueField" promptText="e.g., Large, Red" styleClass="text-field-small" />
-                        </VBox>
-
-                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                            <Label text="Stock *" styleClass="field-label-small" />
-                            <TextField fx:id="variationStockField" promptText="e.g., 50" styleClass="text-field-small" />
-                        </VBox>
-
-                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                            <Label text="Additional Price" styleClass="field-label-small" />
-                            <TextField fx:id="variationPriceField" promptText="e.g., 5000" styleClass="text-field-small" />
-                        </VBox>
-
-                        <VBox spacing="6.0" alignment="BOTTOM_CENTER">
-                            <Button fx:id="addVariationBtn" text="Add" onAction="#handleAddVariation" styleClass="small-button" />
+                            <Label text="Value *" styleClass="field-label" />
+                            <TextField fx:id="variationValueField" promptText="e.g., Large, Chocolate" styleClass="text-field" />
                         </VBox>
                     </HBox>
-                </VBox>
 
-                <!-- Variations Table -->
-                <VBox spacing="10.0">
-                    <Label text="Product Variations List" styleClass="subsection-title" />
+                    <HBox spacing="15.0">
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label text="Stock *" styleClass="field-label" />
+                            <TextField fx:id="variationStockField" promptText="e.g., 50" styleClass="text-field" />
+                        </VBox>
 
-                    <TableView fx:id="variationsTable" prefHeight="200.0" styleClass="variations-table">
-                        <columns>
-                            <TableColumn fx:id="typeColumn" text="Type" prefWidth="100.0" />
-                            <TableColumn fx:id="valueColumn" text="Value" prefWidth="100.0" />
-                            <TableColumn fx:id="stockColumn" text="Stock" prefWidth="80.0" />
-                            <TableColumn fx:id="priceColumn" text="Additional Price" prefWidth="120.0" />
-                            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="80.0" />
-                        </columns>
-                        <placeholder>
-                            <Label text="No variations added yet. Add at least one variation to continue." />
-                        </placeholder>
-                    </TableView>
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label text="Additional Price" styleClass="field-label" />
+                            <TextField fx:id="variationPriceField" promptText="e.g., 5000 (optional)" styleClass="text-field" />
+                        </VBox>
+                    </HBox>
                 </VBox>
             </VBox>
 

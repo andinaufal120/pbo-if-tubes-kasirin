@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
- * Enhanced TransactionService with improved error handling and transaction detail management
+ * Simplified TransactionService with streamlined product variation handling
  *
  * @author yamaym
  */
@@ -43,12 +43,12 @@ public class TransactionService {
     }
 
     /**
-     * Process a complete transaction with enhanced error handling and logging
+     * Process a complete transaction with simplified variation handling
      */
     public TransactionResult processCompleteTransaction(List<TransactionItem> items, User user, Store store, double paymentAmount)
             throws TransactionException {
 
-        System.out.println("=== Starting Transaction Processing ===");
+        System.out.println("=== Starting Simplified Transaction Processing ===");
         System.out.println("Store: " + store.getName() + " (ID: " + store.getId() + ")");
         System.out.println("User: " + user.getName() + " (ID: " + user.getId() + ")");
         System.out.println("Items: " + items.size());
@@ -86,7 +86,7 @@ public class TransactionService {
                 throw new TransactionException("Failed to create transaction record - invalid ID returned: " + transactionId);
             }
 
-            // Step 4: Process each transaction item with detailed logging
+            // Step 4: Process each transaction item with simplified handling
             List<TransactionDetail> transactionDetails = processTransactionItems(transactionId, items);
             System.out.println("Transaction details created: " + transactionDetails.size() + " items");
 
@@ -108,7 +108,7 @@ public class TransactionService {
                     transaction.getTimestamp()
             );
 
-            System.out.println("=== Transaction Processing Completed Successfully ===");
+            System.out.println("=== Simplified Transaction Processing Completed Successfully ===");
             return result;
 
         } catch (TransactionException e) {
@@ -127,7 +127,7 @@ public class TransactionService {
     }
 
     /**
-     * Enhanced validation with detailed logging
+     * Simplified validation with detailed logging
      */
     private void validateTransactionInput(List<TransactionItem> items, User user, Store store, double paymentAmount)
             throws TransactionException {
@@ -150,7 +150,7 @@ public class TransactionService {
             throw new TransactionException("Payment amount cannot be negative: " + paymentAmount);
         }
 
-        // Validate each transaction item with detailed logging
+        // Validate each transaction item
         for (int i = 0; i < items.size(); i++) {
             TransactionItem item = items.get(i);
             System.out.println("Validating item " + (i + 1) + ": " + item);
@@ -176,7 +176,7 @@ public class TransactionService {
     }
 
     /**
-     * Enhanced transaction calculation with detailed validation
+     * Simplified transaction calculation
      */
     private TransactionCalculation validateAndCalculateTransaction(List<TransactionItem> items, double paymentAmount)
             throws TransactionException {
@@ -197,20 +197,14 @@ public class TransactionService {
             }
             System.out.println("Product found: " + product.getName() + " (Base price: Rp " + product.getBasePrice() + ")");
 
-            // Validate variation exists (if specified)
-            ProductVariation variation = null;
-            if (item.getVariationId() > 0) {
-                variation = productVariationDAO.findProductVariation(item.getVariationId());
-                if (variation == null) {
-                    throw new TransactionException("Product variation not found for ID: " + item.getVariationId());
-                }
+            // Get the single variation for this product
+            List<ProductVariation> variations = productVariationDAO.findVariationsByProductId(item.getProductId());
+            ProductVariation variation = variations.isEmpty() ? null : variations.get(0);
 
-                // Verify variation belongs to the product
-                if (variation.getProductId() != item.getProductId()) {
-                    throw new TransactionException("Product variation " + item.getVariationId() +
-                            " does not belong to product " + item.getProductId());
-                }
+            if (variation != null) {
                 System.out.println("Variation found: " + variation.getValue() + " (Additional price: Rp " + variation.getAdditionalPrice() + ")");
+            } else {
+                System.out.println("No variation found for product - using base price only");
             }
 
             // Calculate and validate price
@@ -257,45 +251,47 @@ public class TransactionService {
     }
 
     /**
-     * Enhanced stock validation with detailed logging
+     * Simplified stock validation
      */
     private void validateStockAvailability(List<TransactionItem> items) throws TransactionException {
         System.out.println("Validating stock availability...");
 
         List<String> stockErrors = new ArrayList<>();
 
-        // Group items by variation to handle multiple quantities of same variation
-        Map<Integer, Integer> variationQuantities = items.stream()
-                .filter(item -> item.getVariationId() > 0)
+        // Group items by product to handle multiple quantities of same product
+        Map<Integer, Integer> productQuantities = items.stream()
                 .collect(Collectors.groupingBy(
-                        TransactionItem::getVariationId,
+                        TransactionItem::getProductId,
                         Collectors.summingInt(TransactionItem::getQuantity)
                 ));
 
-        System.out.println("Checking stock for " + variationQuantities.size() + " variations");
+        System.out.println("Checking stock for " + productQuantities.size() + " products");
 
-        for (Map.Entry<Integer, Integer> entry : variationQuantities.entrySet()) {
-            int variationId = entry.getKey();
+        for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+            int productId = entry.getKey();
             int requiredQuantity = entry.getValue();
 
-            System.out.println("Checking variation ID " + variationId + " - required: " + requiredQuantity);
+            System.out.println("Checking product ID " + productId + " - required: " + requiredQuantity);
 
-            ProductVariation variation = productVariationDAO.findProductVariation(variationId);
-            if (variation == null) {
-                stockErrors.add("Variation ID " + variationId + " not found");
-                continue;
-            }
+            // Get the single variation for this product
+            List<ProductVariation> variations = productVariationDAO.findVariationsByProductId(productId);
 
-            System.out.println("Available stock: " + variation.getStocks());
+            if (!variations.isEmpty()) {
+                ProductVariation variation = variations.get(0);
+                System.out.println("Available stock: " + variation.getStocks());
 
-            if (variation.getStocks() < requiredQuantity) {
-                Product product = productDAO.findProduct(variation.getProductId());
-                String productName = product != null ? product.getName() : "Unknown Product";
+                if (variation.getStocks() < requiredQuantity) {
+                    Product product = productDAO.findProduct(productId);
+                    String productName = product != null ? product.getName() : "Unknown Product";
 
-                stockErrors.add(String.format(
-                        "%s (%s): Available %d, Required %d",
-                        productName, variation.getValue(), variation.getStocks(), requiredQuantity
-                ));
+                    stockErrors.add(String.format(
+                            "%s: Available %d, Required %d",
+                            productName, variation.getStocks(), requiredQuantity
+                    ));
+                }
+            } else {
+                // No variation found - assume unlimited stock or add warning
+                System.out.println("No variation found for product " + productId + " - assuming sufficient stock");
             }
         }
 
@@ -344,7 +340,7 @@ public class TransactionService {
     }
 
     /**
-     * Enhanced transaction items processing with detailed error handling
+     * Simplified transaction items processing - no variation_id needed
      */
     private List<TransactionDetail> processTransactionItems(int transactionId, List<TransactionItem> items)
             throws TransactionException {
@@ -358,21 +354,20 @@ public class TransactionService {
             System.out.println("Processing item " + (i + 1) + "/" + items.size() + ": " + item);
 
             try {
-                // Create transaction detail with proper transaction ID
+                // Simplified: Create transaction detail with only product_id, no variation_id
                 TransactionDetail detail = new TransactionDetail(
                         item.getProductId(),
-                        item.getVariationId(),
+                        0, // Set variation_id to 0 (will be NULL in database)
                         item.getQuantity(),
                         item.getPricePerUnit()
                 );
 
-                // CRITICAL: Set transaction ID BEFORE insertion
+                // Set transaction ID
                 detail.setTransactionId(transactionId);
 
                 System.out.println("Created TransactionDetail: " +
                         "TransactionID=" + detail.getTransactionId() +
                         ", ProductID=" + detail.getProductID() +
-                        ", VariationID=" + detail.getVariationID() +
                         ", Quantity=" + detail.getQuantity() +
                         ", PricePerUnit=" + detail.getPricePerUnit());
 
@@ -430,56 +425,58 @@ public class TransactionService {
     }
 
     /**
-     * Enhanced stock update with detailed logging
+     * Simplified stock update
      */
     private void updateProductStocks(List<TransactionItem> items) throws TransactionException {
         System.out.println("Updating product stocks...");
 
-        // Group items by variation to handle multiple quantities
-        Map<Integer, Integer> variationQuantities = items.stream()
-                .filter(item -> item.getVariationId() > 0)
+        // Group items by product to handle multiple quantities
+        Map<Integer, Integer> productQuantities = items.stream()
                 .collect(Collectors.groupingBy(
-                        TransactionItem::getVariationId,
+                        TransactionItem::getProductId,
                         Collectors.summingInt(TransactionItem::getQuantity)
                 ));
 
-        System.out.println("Updating stock for " + variationQuantities.size() + " variations");
+        System.out.println("Updating stock for " + productQuantities.size() + " products");
 
-        for (Map.Entry<Integer, Integer> entry : variationQuantities.entrySet()) {
-            int variationId = entry.getKey();
+        for (Map.Entry<Integer, Integer> entry : productQuantities.entrySet()) {
+            int productId = entry.getKey();
             int quantityToReduce = entry.getValue();
 
-            System.out.println("Updating stock for variation " + variationId + " - reducing by " + quantityToReduce);
+            System.out.println("Updating stock for product " + productId + " - reducing by " + quantityToReduce);
 
             try {
-                ProductVariation variation = productVariationDAO.findProductVariation(variationId);
-                if (variation == null) {
-                    throw new TransactionException("Product variation not found during stock update: " + variationId);
+                // Get the single variation for this product
+                List<ProductVariation> variations = productVariationDAO.findVariationsByProductId(productId);
+
+                if (!variations.isEmpty()) {
+                    ProductVariation variation = variations.get(0);
+                    int originalStock = variation.getStocks();
+                    int newStock = originalStock - quantityToReduce;
+
+                    System.out.println("Stock update: " + originalStock + " -> " + newStock);
+
+                    if (newStock < 0) {
+                        throw new TransactionException("Stock would become negative for product " + productId +
+                                ": " + originalStock + " - " + quantityToReduce + " = " + newStock);
+                    }
+
+                    variation.setStocks(newStock);
+                    int updateResult = productVariationDAO.updateProductVariation(variation.getId(), variation);
+
+                    if (updateResult <= 0) {
+                        throw new TransactionException("Failed to update stock for product " + productId +
+                                " - DAO returned: " + updateResult);
+                    }
+
+                    System.out.println("Successfully updated stock for product " + productId +
+                            ": " + originalStock + " -> " + newStock);
+                } else {
+                    System.out.println("No variation found for product " + productId + " - skipping stock update");
                 }
-
-                int originalStock = variation.getStocks();
-                int newStock = originalStock - quantityToReduce;
-
-                System.out.println("Stock update: " + originalStock + " -> " + newStock);
-
-                if (newStock < 0) {
-                    throw new TransactionException("Stock would become negative for variation " + variationId +
-                            ": " + originalStock + " - " + quantityToReduce + " = " + newStock);
-                }
-
-                variation.setStocks(newStock);
-                int updateResult = productVariationDAO.updateProductVariation(variationId, variation);
-
-                if (updateResult <= 0) {
-                    throw new TransactionException("Failed to update stock for variation " + variationId +
-                            " - DAO returned: " + updateResult);
-                }
-
-                System.out.println("Successfully updated stock for variation " + variationId +
-                        ": " + originalStock + " -> " + newStock);
 
             } catch (Exception e) {
-                String errorMsg = "Error updating stock for variation " + variationId + ": " + e.getMessage();
+                String errorMsg = "Error updating stock for product " + productId + ": " + e.getMessage();
                 System.err.println(errorMsg);
                 e.printStackTrace();
                 throw new TransactionException(errorMsg, e);
@@ -551,92 +548,24 @@ public class TransactionService {
         }
     }
 
-    /**
-     * Get daily revenue for a store
-     */
-    public double getDailyRevenue(int storeId, java.sql.Date date) {
-        try {
-            List<Transaction> transactions = getTransactionHistory(storeId);
-            return transactions.stream()
-                    .filter(t -> isSameDay(t.getTimestamp(), date))
-                    .mapToDouble(Transaction::getTotal)
-                    .sum();
-        } catch (Exception e) {
-            System.err.println("Error calculating daily revenue: " + e.getMessage());
-            return 0.0;
-        }
-    }
-
-    /**
-     * Get total revenue for a store within date range
-     */
-    public double getTotalRevenue(int storeId, java.sql.Date startDate, java.sql.Date endDate) {
-        try {
-            List<Transaction> transactions = getTransactionHistory(storeId);
-            return transactions.stream()
-                    .filter(t -> isWithinDateRange(t.getTimestamp(), startDate, endDate))
-                    .mapToDouble(Transaction::getTotal)
-                    .sum();
-        } catch (Exception e) {
-            System.err.println("Error calculating total revenue: " + e.getMessage());
-            return 0.0;
-        }
-    }
-
-    /**
-     * Get transaction count for a store within date range
-     */
-    public int getTransactionCount(int storeId, java.sql.Date startDate, java.sql.Date endDate) {
-        try {
-            List<Transaction> transactions = getTransactionHistory(storeId);
-            return (int) transactions.stream()
-                    .filter(t -> isWithinDateRange(t.getTimestamp(), startDate, endDate))
-                    .count();
-        } catch (Exception e) {
-            System.err.println("Error calculating transaction count: " + e.getMessage());
-            return 0;
-        }
-    }
-
-    // ==================== HELPER METHODS ====================
-
-    /**
-     * Check if timestamp is on the same day as date
-     */
-    private boolean isSameDay(Timestamp timestamp, java.sql.Date date) {
-        java.sql.Date transactionDate = new java.sql.Date(timestamp.getTime());
-        return transactionDate.equals(date);
-    }
-
-    /**
-     * Check if timestamp is within date range
-     */
-    private boolean isWithinDateRange(Timestamp timestamp, java.sql.Date startDate, java.sql.Date endDate) {
-        java.sql.Date transactionDate = new java.sql.Date(timestamp.getTime());
-        return !transactionDate.before(startDate) && !transactionDate.after(endDate);
-    }
-
     // ==================== INNER CLASSES ====================
 
     /**
-     * Enhanced TransactionItem with better validation
+     * Simplified TransactionItem without variation ID
      */
     public static class TransactionItem {
         private int productId;
-        private int variationId;
         private int quantity;
         private double pricePerUnit;
 
-        public TransactionItem(int productId, int variationId, int quantity, double pricePerUnit) {
+        public TransactionItem(int productId, int quantity, double pricePerUnit) {
             this.productId = productId;
-            this.variationId = variationId;
             this.quantity = quantity;
             this.pricePerUnit = pricePerUnit;
         }
 
         // Getters
         public int getProductId() { return productId; }
-        public int getVariationId() { return variationId; }
         public int getQuantity() { return quantity; }
         public double getPricePerUnit() { return pricePerUnit; }
 
@@ -644,10 +573,6 @@ public class TransactionService {
         public void setProductId(int productId) {
             if (productId <= 0) throw new IllegalArgumentException("Product ID must be greater than 0");
             this.productId = productId;
-        }
-
-        public void setVariationId(int variationId) {
-            this.variationId = variationId;
         }
 
         public void setQuantity(int quantity) {
@@ -666,8 +591,8 @@ public class TransactionService {
 
         @Override
         public String toString() {
-            return String.format("TransactionItem{productId=%d, variationId=%d, quantity=%d, pricePerUnit=%.2f, total=%.2f}",
-                    productId, variationId, quantity, pricePerUnit, getTotalPrice());
+            return String.format("TransactionItem{productId=%d, quantity=%d, pricePerUnit=%.2f, total=%.2f}",
+                    productId, quantity, pricePerUnit, getTotalPrice());
         }
     }
 
