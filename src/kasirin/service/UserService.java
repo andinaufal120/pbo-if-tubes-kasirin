@@ -1,18 +1,17 @@
 package kasirin.service;
 
-import java.awt.Component;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import kasirin.data.dao.DAOFactory;
 import kasirin.data.dao.MySqlUserDAO;
 import kasirin.data.model.Role;
 import kasirin.data.model.User;
-import kasirin.ui.IndexPage;
 
-/// Service layer untuk menangani logika bisnis terkait User
-/// @author yamaym
+/**
+ * Service layer for handling user-related business logic
+ * Decoupled from UI components to maintain separation of concerns
+ *
+ * @author yamaym
+ */
 public class UserService {
 
     private MySqlUserDAO userDAO;
@@ -22,134 +21,103 @@ public class UserService {
         this.userDAO = (MySqlUserDAO) factory.getUserDAO();
     }
 
-    public void performLogin(Component parentComponent, String username, String password, JFrame loginFrame) {
-        try {
-            // Validasi input
-            if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
-                throw new IllegalArgumentException("Username dan password tidak boleh kosong!");
-            }
-
-            // Autentikasi
-            User user = userDAO.authenticateUser(username.trim(), password);
-
-            if (user == null) {
-                throw new SecurityException("Username atau password salah!");
-            }
-
-            // Tampilkan pesan sukses
-            JOptionPane.showMessageDialog(
-                    parentComponent,
-                    "Login berhasil! Selamat datang, " + user.getName(),
-                    "Sukses",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            // Buka halaman utama
-            SwingUtilities.invokeLater(() -> {
-                IndexPage indexPage = new IndexPage(user);
-                indexPage.setVisible(true);
-                loginFrame.dispose();
-            });
-
-        } catch (IllegalArgumentException | SecurityException e) {
-            JOptionPane.showMessageDialog(
-                    parentComponent,
-                    e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                    parentComponent,
-                    "Terjadi kesalahan saat login: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
-    /// Autentikasi user dengan username dan password
+    /**
+     * Authenticates a user with the provided credentials
+     *
+     * @param username The username to authenticate
+     * @param password The password to authenticate
+     * @return User object if authentication is successful, null otherwise
+     */
     public User authenticateUser(String username, String password) {
+        // Input validation
         if (username == null || password == null || username.trim().isEmpty() || password.trim().isEmpty()) {
             return null;
         }
+
+        // Authenticate using DAO
         return userDAO.authenticateUser(username.trim(), password);
     }
 
-    public User performRegistration(String name, String username, String password,
-            String confirmPassword, Role role) throws Exception {
-        // Validasi input kosong
-        if (name == null || username == null || password == null
-                || confirmPassword == null || role == null) {
+    /**
+     * Registers a new user with validation
+     *
+     * @param name User's full name
+     * @param username Desired username
+     * @param password Password
+     * @param confirmPassword Password confirmation
+     * @param role User role
+     * @return The newly created User object
+     * @throws IllegalArgumentException If validation fails
+     * @throws RuntimeException If user creation fails
+     */
+    public User registerUser(String name, String username, String password,
+                             String confirmPassword, Role role) throws Exception {
+        // Validate input
+        if (name == null || username == null || password == null ||
+                confirmPassword == null || role == null) {
             throw new IllegalArgumentException("Semua field harus diisi!");
         }
 
         name = name.trim();
         username = username.trim();
 
-        // Validasi password match
+        // Validate password match
         if (!password.equals(confirmPassword)) {
             throw new IllegalArgumentException("Password dan konfirmasi password tidak sama!");
         }
 
-        // Validasi panjang password
+        // Validate password length
         if (password.length() < 6) {
             throw new IllegalArgumentException("Password minimal 6 karakter!");
         }
 
-        // Cek apakah username sudah ada
+        // Check if username already exists
         if (userDAO.isUsernameExists(username)) {
             throw new IllegalArgumentException("Username sudah digunakan! Pilih username lain.");
         }
 
-        // Buat user baru
+        // Create new user
         User newUser = new User(name, username, password);
         newUser.setRole(role);
 
-        // Simpan ke database
+        // Save to database
         int userId = userDAO.insertUser(newUser);
 
         if (userId <= 0) {
             throw new RuntimeException("Gagal membuat akun. Silakan coba lagi.");
         }
 
+        // Set the ID from the database
+        newUser.setId(userId);
+
         return newUser;
     }
 
-    /// Registrasi user baru dengan validasi
-    public boolean registerUser(String name, String username, String password, Role role) {
-        // Validasi input
-        if (name == null || username == null || password == null || role == null) {
-            return false;
-        }
-
-        if (name.trim().isEmpty() || username.trim().isEmpty() || password.length() < 6) {
-            return false;
-        }
-
-        // Cek apakah username sudah ada
-        if (userDAO.isUsernameExists(username.trim())) {
-            return false;
-        }
-
-        // Buat user baru
-        User newUser = new User(name.trim(), username.trim(), password);
-        newUser.setRole(role);
-
-        return userDAO.insertUser(newUser) > 0;
-    }
-
-    /// Mendapatkan semua user
+    /**
+     * Gets all users from the database
+     *
+     * @return List of all users
+     */
     public List<User> getAllUsers() {
         return userDAO.getAllUsers();
     }
 
-    /// Mencari user berdasarkan ID
+    /**
+     * Finds a user by their ID
+     *
+     * @param id User ID to search for
+     * @return User object if found, null otherwise
+     */
     public User getUserById(int id) {
         return userDAO.findUser(id);
     }
 
-    /// Mencari user berdasarkan username
+    /**
+     * Finds a user by their username
+     *
+     * @param username Username to search for
+     * @return User object if found, null otherwise
+     */
     public User getUserByUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
             return null;
@@ -157,7 +125,13 @@ public class UserService {
         return userDAO.findUserByUsername(username.trim());
     }
 
-    /// Update user
+    /**
+     * Updates an existing user
+     *
+     * @param id User ID to update
+     * @param user Updated User object
+     * @return true if update was successful, false otherwise
+     */
     public boolean updateUser(int id, User user) {
         if (user == null) {
             return false;
@@ -165,12 +139,22 @@ public class UserService {
         return userDAO.updateUser(id, user) > 0;
     }
 
-    /// Hapus user
+    /**
+     * Deletes a user by their ID
+     *
+     * @param id User ID to delete
+     * @return true if deletion was successful, false otherwise
+     */
     public boolean deleteUser(int id) {
         return userDAO.deleteUser(id) > 0;
     }
 
-    /// Cek apakah username sudah ada
+    /**
+     * Checks if a username already exists in the database
+     *
+     * @param username Username to check
+     * @return true if username exists, false otherwise
+     */
     public boolean isUsernameExists(String username) {
         if (username == null || username.trim().isEmpty()) {
             return false;
@@ -178,7 +162,9 @@ public class UserService {
         return userDAO.isUsernameExists(username.trim());
     }
 
-    /// Tutup koneksi database
+    /**
+     * Closes the database connection
+     */
     public void closeConnection() {
         if (userDAO != null) {
             userDAO.closeConnection();
