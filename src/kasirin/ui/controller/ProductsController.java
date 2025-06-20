@@ -13,9 +13,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kasirin.data.model.Product;
+import kasirin.data.model.ProductVariation;
 import kasirin.data.model.Store;
 import kasirin.data.model.User;
 import kasirin.service.ProductService;
+import kasirin.service.ProductVariationService;
 import kasirin.ui.util.AlertUtil;
 
 import java.net.URL;
@@ -64,6 +66,7 @@ public class ProductsController implements Initializable {
     private User currentUser;
     private Store currentStore;
     private ProductService productService;
+    private ProductVariationService variationService;
     private ObservableList<Product> productList;
     private Product selectedProduct;
 
@@ -71,6 +74,7 @@ public class ProductsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             productService = new ProductService();
+            variationService = new ProductVariationService(); // Add this line
             productList = FXCollections.observableArrayList();
 
             setupTables();
@@ -145,11 +149,11 @@ public class ProductsController implements Initializable {
             }
         });
 
-        // Kolom stok (placeholder - TODO: Tim implementasikan dari ProductVariations)
+        // Kolom stok - hitung dari variasi produk
         productStockCol.setCellValueFactory(cellData -> {
-            // TODO: Tim implementasikan perhitungan total stok dari variasi produk
-            // Query: SELECT SUM(stocks) FROM ProductsVariations WHERE product_id = ?
-            return new javafx.beans.property.SimpleStringProperty("N/A");
+            Product product = cellData.getValue();
+            int totalStock = variationService.getTotalStockForProduct(product.getId());
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(totalStock));
         });
 
         // Setup kolom aksi dengan tombol edit dan hapus
@@ -228,14 +232,28 @@ public class ProductsController implements Initializable {
 
     /**
      * Load variasi untuk produk yang dipilih
-     * TODO: Tim implementasikan loading dari database
      *
      * @param product Produk yang dipilih
      */
     private void loadProductVariations(Product product) {
-        // TODO: Tim implementasikan loading variasi produk dari database
-        // Gunakan ProductVariationService untuk mengambil data
-        // Query: SELECT * FROM ProductsVariations WHERE product_id = ?
+        try {
+            List<ProductVariation> productVariations = variationService.getVariationsByProductId(product.getId());
+
+            // Clear existing data
+            variationsTable.getItems().clear();
+
+            // Convert to observable list and add to table
+            ObservableList<ProductVariation> variationsList = FXCollections.observableArrayList(productVariations);
+            variationsTable.setItems(variationsList);
+
+            // Update add variation button state
+            addVariationBtn.setDisable(false);
+
+        } catch (Exception e) {
+            System.err.println("Error loading product variations: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtil.showError("Error", "Gagal memuat variasi produk: " + e.getMessage());
+        }
     }
 
     /**

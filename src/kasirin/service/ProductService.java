@@ -50,13 +50,23 @@ public class ProductService {
     }
 
     /**
-     * Deletes an existing product
+     * Deletes an existing product and all its variations
      *
      * @param id the product id to be deleted
      * @return true if deletion was successful, false otherwise
      * @throws IllegalArgumentException if product ID doesn't exist
      */
     public boolean deleteProduct(int id) {
+        // First, delete all variations for this product
+        ProductVariationService variationService = new ProductVariationService();
+        try {
+            variationService.deleteVariationsByProductId(id);
+        } catch (Exception e) {
+            System.err.println("Error deleting product variations: " + e.getMessage());
+            // Continue with product deletion even if variation deletion fails
+        }
+
+        // Then delete the product
         int affectedRows = productDAO.deleteProduct(id);
         if (affectedRows == 0) {
             throw new IllegalArgumentException("Product id does not exist");

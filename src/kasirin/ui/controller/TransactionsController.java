@@ -100,6 +100,9 @@ public class TransactionsController implements Initializable {
             this.currentUser = user;
             this.currentStore = store;
 
+            System.out.println("Initializing with User: " + user.getName() + " (ID: " + user.getId() + ")");
+            System.out.println("Initializing with Store: " + store.getName() + " (ID: " + store.getId() + ")");
+
             cashierLabel.setText("Cashier: " + user.getName());
             loadProducts();
 
@@ -349,9 +352,24 @@ public class TransactionsController implements Initializable {
      */
     private void showProductVariations(Product product) {
         try {
-            // For now, add product with default variation
-            // TODO: Implement variation selection dialog when ProductVariationService is available
-            addToCart(product, null, 1);
+            // Show quantity input dialog
+            TextInputDialog dialog = new TextInputDialog("1");
+            dialog.setTitle("Add to Cart");
+            dialog.setHeaderText("Add " + product.getName() + " to cart");
+            dialog.setContentText("Quantity:");
+
+            dialog.showAndWait().ifPresent(result -> {
+                try {
+                    int quantity = Integer.parseInt(result);
+                    if (quantity > 0) {
+                        addToCart(product, null, quantity);
+                    } else {
+                        AlertUtil.showWarning("Invalid Quantity", "Quantity must be greater than 0");
+                    }
+                } catch (NumberFormatException e) {
+                    AlertUtil.showError("Invalid Input", "Please enter a valid number");
+                }
+            });
         } catch (Exception e) {
             AlertUtil.showError("Product Selection Error", "Failed to add product to cart: " + e.getMessage());
         }
@@ -362,6 +380,8 @@ public class TransactionsController implements Initializable {
      */
     private void addToCart(Product product, ProductVariation variation, int quantity) {
         try {
+            System.out.println("Adding to cart: " + product.getName() + " x" + quantity);
+
             if (quantity <= 0) {
                 AlertUtil.showWarning("Invalid Quantity", "Quantity must be greater than 0");
                 return;
@@ -376,19 +396,23 @@ public class TransactionsController implements Initializable {
                 variationInfo = variation.getType() + ": " + variation.getValue();
                 variationId = variation.getId();
             }
-            final int finalVariationId = variationId;
 
             // Check if item already exists in cart
-            CartItem existingItem = cartItems.stream()
-                    .filter(item -> item.getProductId() == product.getId() && item.getVariationId() == finalVariationId)
-                    .findFirst()
-                    .orElse(null);
+            CartItem existingItem = null;
+            for (CartItem item : cartItems) {
+                if (item.getProductId() == product.getId() && item.getVariationId() == variationId) {
+                    existingItem = item;
+                    break;
+                }
+            }
 
             if (existingItem != null) {
-                // Update quantity
-                existingItem.setQuantity(existingItem.getQuantity() + quantity);
+                // Update quantity of existing item
+                int newQuantity = existingItem.getQuantity() + quantity;
+                System.out.println("Updating existing cart item quantity: " + existingItem.getQuantity() + " -> " + newQuantity);
+                existingItem.setQuantity(newQuantity);
             } else {
-                // Add new item
+                // Add new item to cart
                 CartItem newItem = new CartItem(
                         product.getId(),
                         variationId,
@@ -398,13 +422,15 @@ public class TransactionsController implements Initializable {
                         pricePerUnit
                 );
                 cartItems.add(newItem);
+                System.out.println("Added new cart item: " + newItem);
             }
 
             cartTable.refresh();
-            System.out.println("Added to cart: " + product.getName() + " x" + quantity);
+            System.out.println("Cart updated successfully. Total items: " + cartItems.size());
 
         } catch (Exception e) {
             System.err.println("Error adding item to cart: " + e.getMessage());
+            e.printStackTrace();
             AlertUtil.showError("Cart Error", "Failed to add item to cart: " + e.getMessage());
         }
     }
@@ -426,11 +452,15 @@ public class TransactionsController implements Initializable {
                     return;
                 }
 
+                System.out.println("Updating cart item quantity: " + item.getQuantity() + " -> " + newQuantity);
                 item.setQuantity(newQuantity);
                 cartTable.refresh();
 
             } catch (NumberFormatException e) {
                 AlertUtil.showError("Invalid Input", "Please enter a valid number");
+            } catch (Exception e) {
+                System.err.println("Error updating cart item: " + e.getMessage());
+                AlertUtil.showError("Update Error", "Failed to update quantity: " + e.getMessage());
             }
         });
     }
@@ -442,7 +472,7 @@ public class TransactionsController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Remove Item");
         alert.setHeaderText("Remove item from cart?");
-        alert.setContentText(item.getProductName() + " (" + item.getVariationInfo() + ")");
+        alert.setContentText(item.getProductName() + " (" + item.getVariationInfo() + ") x" + item.getQuantity());
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
@@ -547,6 +577,8 @@ public class TransactionsController implements Initializable {
 
     @FXML
     private void processPayment() {
+        System.out.println("=== Processing Payment ===");
+
         try {
             // Validation
             if (cartItems.isEmpty()) {
@@ -562,14 +594,20 @@ public class TransactionsController implements Initializable {
             }
 
             double paymentAmount = Double.parseDouble(paymentText);
+            System.out.println("Payment amount: Rp " + String.format("%,.2f", paymentAmount));
 
             // Show processing indicator
             checkoutBtn.setText("Processing...");
             checkoutBtn.setDisable(true);
 
-            // Convert cart items to transaction items
+            // Convert cart items to transaction items with detailed logging
             List<TransactionItem> transactionItems = new ArrayList<>();
-            for (CartItem cartItem : cartItems) {
+            System.out.println("Converting " + cartItems.size() + " cart items to transaction items:");
+
+            for (int i = 0; i < cartItems.size(); i++) {
+                CartItem cartItem = cartItems.get(i);
+                System.out.println("Cart item " + (i + 1) + ": " + cartItem);
+
                 TransactionItem transactionItem = new TransactionItem(
                         cartItem.getProductId(),
                         cartItem.getVariationId(),
@@ -577,7 +615,23 @@ public class TransactionsController implements Initializable {
                         cartItem.getPricePerUnit()
                 );
                 transactionItems.add(transactionItem);
+                System.out.println("Created transaction item: " + transactionItem);
             }
+
+            // Validate user and store data
+            if (currentUser == null || currentUser.getId() <= 0) {
+                throw new RuntimeException("Invalid user data: " + currentUser);
+            }
+
+            if (currentStore == null || currentStore.getId() <= 0) {
+                throw new RuntimeException("Invalid store data: " + currentStore);
+            }
+
+            System.out.println("Processing transaction with:");
+            System.out.println("- User: " + currentUser.getName() + " (ID: " + currentUser.getId() + ")");
+            System.out.println("- Store: " + currentStore.getName() + " (ID: " + currentStore.getId() + ")");
+            System.out.println("- Items: " + transactionItems.size());
+            System.out.println("- Payment: Rp " + String.format("%,.2f", paymentAmount));
 
             // Process transaction
             TransactionResult result = transactionService.processCompleteTransaction(
@@ -590,12 +644,14 @@ public class TransactionsController implements Initializable {
                             "Total: Rp %,.0f\n" +
                             "Payment: Rp %,.0f\n" +
                             "Change: Rp %,.0f\n" +
-                            "Items: %d",
+                            "Items: %d\n" +
+                            "Time: %s",
                     result.getTransactionId(),
                     result.getTotalAmount(),
                     result.getPaymentAmount(),
                     result.getChangeAmount(),
-                    result.getTransactionDetails().size()
+                    result.getTransactionDetails().size(),
+                    result.getTransactionTime().toString()
             );
 
             AlertUtil.showInfo("Payment Processed", successMessage);
@@ -604,10 +660,12 @@ public class TransactionsController implements Initializable {
             cartItems.clear();
             paymentAmountField.clear();
 
-            System.out.println("Transaction completed: " + result);
+            System.out.println("Transaction completed successfully: " + result);
+            System.out.println("=== Payment Processing Complete ===");
 
         } catch (TransactionException e) {
             System.err.println("Transaction error: " + e.getMessage());
+            e.printStackTrace();
             AlertUtil.showError("Transaction Failed", e.getMessage());
         } catch (NumberFormatException e) {
             AlertUtil.showError("Invalid Payment", "Please enter a valid payment amount.");
@@ -656,8 +714,10 @@ public class TransactionsController implements Initializable {
         // Setters with validation
         public void setQuantity(int quantity) {
             if (quantity <= 0) {
-                throw new IllegalArgumentException("Quantity must be greater than 0");
+                throw new IllegalArgumentException("Quantity must be greater than 0: " + quantity);
             }
+
+            System.out.println("Updating quantity for " + productName + ": " + this.quantity + " -> " + quantity);
             this.quantity = quantity;
         }
 
@@ -667,8 +727,8 @@ public class TransactionsController implements Initializable {
 
         @Override
         public String toString() {
-            return String.format("%s (%s) x%d @ Rp %,.0f = Rp %,.0f",
-                    productName, variationInfo, quantity, pricePerUnit, getTotalPrice());
+            return String.format("CartItem{productId=%d, variationId=%d, name='%s', variation='%s', qty=%d, price=%.2f, total=%.2f}",
+                    productId, variationId, productName, variationInfo, quantity, pricePerUnit, getTotalPrice());
         }
     }
 }
