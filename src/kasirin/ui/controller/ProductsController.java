@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kasirin.data.model.Product;
-import kasirin.data.model.ProductVariation;
 import kasirin.data.model.Store;
 import kasirin.data.model.User;
 import kasirin.data.model.Role;
@@ -26,12 +25,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Enhanced Products Controller with Role-based Access Control
+ * Products Controller - Simplified based on FXML elements only
  *
  * @author yamaym
  */
 public class ProductsController implements Initializable {
 
+    // UI Elements yang ada di FXML
     @FXML private TextField searchField;
     @FXML private Button addProductBtn;
     @FXML private Button searchBtn;
@@ -51,16 +51,10 @@ public class ProductsController implements Initializable {
     @FXML private Label detailBasePriceLabel;
     @FXML private Label detailDescriptionLabel;
 
-    @FXML private TableView<ProductVariation> variationsTable;
-    @FXML private TableColumn<ProductVariation, String> variationTypeCol;
-    @FXML private TableColumn<ProductVariation, String> variationValueCol;
-    @FXML private TableColumn<ProductVariation, String> variationStockCol;
-    @FXML private TableColumn<ProductVariation, String> variationPriceCol;
-    @FXML private TableColumn<ProductVariation, String> variationActionsCol;
-
     @FXML private Button editProductBtn;
     @FXML private Button deleteProductBtn;
 
+    // Business logic
     private User currentUser;
     private Store currentStore;
     private ProductService productService;
@@ -75,8 +69,7 @@ public class ProductsController implements Initializable {
             variationService = new ProductVariationService();
             productList = FXCollections.observableArrayList();
 
-            setupTables();
-            setupFilters();
+            setupProductsTable();
 
             System.out.println("ProductsController berhasil diinisialisasi");
         } catch (Exception e) {
@@ -86,17 +79,14 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Inisialisasi dengan data user dan store, dengan role-based access control
-     *
-     * @param user User yang sedang login
-     * @param store Store yang sedang dikelola
+     * Inisialisasi dengan data user dan store
      */
     public void initializeWithData(User user, Store store) {
         try {
             this.currentUser = user;
             this.currentStore = store;
 
-            // Check role-based access first
+            // Check role-based access
             if (!hasProductAccess()) {
                 showAccessDenied();
                 return;
@@ -123,10 +113,9 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Show access denied message for staff users
+     * Show access denied for staff users
      */
     private void showAccessDenied() {
-        // Disable all interactive elements
         addProductBtn.setDisable(true);
         searchBtn.setDisable(true);
         refreshBtn.setDisable(true);
@@ -139,21 +128,22 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Setup role-based permissions for different user roles
+     * Setup role-based permissions
      */
     private void setupRoleBasedPermissions() {
         Role userRole = currentUser.getRole();
 
         switch (userRole) {
             case STAFF:
-                // Staff should not reach here due to hasProductAccess() check
                 showAccessDenied();
                 break;
             case ADMIN:
-                setupAdminPermissions();
-                break;
             case OWNER:
-                setupOwnerPermissions();
+                // Full access
+                addProductBtn.setDisable(false);
+                editProductBtn.setDisable(false);
+                deleteProductBtn.setDisable(false);
+                System.out.println(userRole + " permissions configured for product management");
                 break;
             default:
                 showAccessDenied();
@@ -162,33 +152,9 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Setup permissions for Admin role
+     * Setup products table
      */
-    private void setupAdminPermissions() {
-        // Admin has full access to product management
-        addProductBtn.setDisable(false);
-        editProductBtn.setDisable(false);
-        deleteProductBtn.setDisable(false);
-
-        System.out.println("Admin permissions configured for product management");
-    }
-
-    /**
-     * Setup permissions for Owner role
-     */
-    private void setupOwnerPermissions() {
-        // Owner has complete access to everything
-        addProductBtn.setDisable(false);
-        editProductBtn.setDisable(false);
-        deleteProductBtn.setDisable(false);
-
-        System.out.println("Owner permissions configured for product management");
-    }
-
-    /**
-     * Setup tabel produk dan variasi
-     */
-    private void setupTables() {
+    private void setupProductsTable() {
         // Setup kolom tabel produk
         productIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         productNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -215,7 +181,7 @@ public class ProductsController implements Initializable {
             return new javafx.beans.property.SimpleStringProperty(String.valueOf(totalStock));
         });
 
-        // Setup kolom aksi dengan role-based access
+        // Setup kolom aksi
         productActionsCol.setCellFactory(col -> {
             TableCell<Product, Void> cell = new TableCell<Product, Void>() {
                 private final Button editBtn = new Button("✏️");
@@ -250,7 +216,6 @@ public class ProductsController implements Initializable {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        // Only show action buttons if user has access
                         if (hasProductAccess()) {
                             javafx.scene.layout.HBox buttons = new javafx.scene.layout.HBox(5);
                             buttons.getChildren().addAll(editBtn, deleteBtn);
@@ -271,7 +236,6 @@ public class ProductsController implements Initializable {
             if (newSelection != null) {
                 selectedProduct = newSelection;
                 showProductDetails(newSelection);
-                loadProductVariations(newSelection);
 
                 // Enable/disable buttons based on role
                 if (hasProductAccess()) {
@@ -285,48 +249,6 @@ public class ProductsController implements Initializable {
                 deleteProductBtn.setDisable(true);
             }
         });
-
-        // Setup tabel variasi produk
-        setupVariationsTable();
-    }
-
-    /**
-     * Setup tabel variasi produk
-     */
-    private void setupVariationsTable() {
-        variationTypeCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Size"));
-        variationValueCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Large"));
-        variationStockCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("25"));
-        variationPriceCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Rp 5,000"));
-        variationActionsCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Edit"));
-    }
-
-    /**
-     * Load variasi untuk produk yang dipilih
-     */
-    private void loadProductVariations(Product product) {
-        try {
-            List<ProductVariation> productVariations = variationService.getVariationsByProductId(product.getId());
-
-            // Clear existing data
-            variationsTable.getItems().clear();
-
-            // Convert to observable list and add to table
-            ObservableList<ProductVariation> variationsList = FXCollections.observableArrayList(productVariations);
-            variationsTable.setItems(variationsList);
-
-        } catch (Exception e) {
-            System.err.println("Error loading product variations: " + e.getMessage());
-            e.printStackTrace();
-            AlertUtil.showError("Error", "Gagal memuat variasi produk: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Setup filter dan dropdown
-     */
-    private void setupFilters() {
-        // Method ini dikosongkan karena categoryFilter tidak ada di FXML
     }
 
     /**
@@ -373,7 +295,7 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Buka dialog tambah produk - dengan role check
+     * Handler untuk tambah produk
      */
     @FXML
     private void showAddProduct() {
@@ -418,86 +340,6 @@ public class ProductsController implements Initializable {
             e.printStackTrace();
             AlertUtil.showError("Error", "Gagal membuka dialog tambah produk: " + e.getMessage());
         }
-    }
-
-    /**
-     * Buka dialog edit produk - dengan role check
-     */
-    private void openEditProductDialog(Product product) {
-        if (!hasProductAccess()) {
-            AlertUtil.showWarning("Akses Ditolak",
-                    "Anda tidak memiliki izin untuk mengedit produk.\n" +
-                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
-            return;
-        }
-
-        try {
-            URL fxmlLocation = getClass().getResource("/kasirin/ui/fxml/EditProductView.fxml");
-            if (fxmlLocation == null) {
-                AlertUtil.showError("Error", "File EditProductView.fxml tidak ditemukan");
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(fxmlLocation);
-            Parent root = loader.load();
-
-            EditProductController controller = loader.getController();
-            controller.initializeWithData(currentUser, currentStore, product, this);
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(editProductBtn.getScene().getWindow());
-            stage.setTitle("Edit Produk");
-            stage.setResizable(false);
-
-            Scene scene = new Scene(root);
-            URL cssLocation = getClass().getResource("/kasirin/ui/css/styles.css");
-            if (cssLocation != null) {
-                scene.getStylesheets().add(cssLocation.toExternalForm());
-            }
-
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.showAndWait();
-
-        } catch (Exception e) {
-            System.err.println("Error membuka dialog edit produk: " + e.getMessage());
-            e.printStackTrace();
-            AlertUtil.showError("Error", "Gagal membuka dialog edit produk: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Handler untuk hapus produk - dengan role check
-     */
-    private void handleDeleteProduct(Product product) {
-        if (!hasProductAccess()) {
-            AlertUtil.showWarning("Akses Ditolak",
-                    "Anda tidak memiliki izin untuk menghapus produk.\n" +
-                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
-            return;
-        }
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Hapus Produk");
-        alert.setHeaderText("Apakah Anda yakin ingin menghapus produk ini?");
-        alert.setContentText("Produk: " + product.getName());
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    boolean deleted = productService.deleteProduct(product.getId());
-                    if (deleted) {
-                        AlertUtil.showInfo("Berhasil", "Produk berhasil dihapus!");
-                        refreshProducts();
-                    } else {
-                        AlertUtil.showError("Error", "Gagal menghapus produk.");
-                    }
-                } catch (Exception e) {
-                    AlertUtil.showError("Error", "Gagal menghapus produk: " + e.getMessage());
-                }
-            }
-        });
     }
 
     /**
@@ -559,6 +401,87 @@ public class ProductsController implements Initializable {
         if (selectedProduct != null) {
             handleDeleteProduct(selectedProduct);
         }
+    }
+
+    /**
+     * Buka dialog edit produk
+     */
+    private void openEditProductDialog(Product product) {
+        if (!hasProductAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk mengedit produk.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
+
+        try {
+            URL fxmlLocation = getClass().getResource("/kasirin/ui/fxml/EditProductView.fxml");
+            if (fxmlLocation == null) {
+                AlertUtil.showError("Error", "File EditProductView.fxml tidak ditemukan");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            Parent root = loader.load();
+
+            EditProductController controller = loader.getController();
+            controller.initializeWithData(currentUser, currentStore, product, this);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(editProductBtn.getScene().getWindow());
+            stage.setTitle("Edit Produk");
+            stage.setResizable(false);
+
+            Scene scene = new Scene(root);
+            URL cssLocation = getClass().getResource("/kasirin/ui/css/styles.css");
+            if (cssLocation != null) {
+                scene.getStylesheets().add(cssLocation.toExternalForm());
+            }
+
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.showAndWait();
+
+        } catch (Exception e) {
+            System.err.println("Error membuka dialog edit produk: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtil.showError("Error", "Gagal membuka dialog edit produk: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handler untuk hapus produk
+     */
+    private void handleDeleteProduct(Product product) {
+        if (!hasProductAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk menghapus produk.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Hapus Produk");
+        alert.setHeaderText("Apakah Anda yakin ingin menghapus produk ini?");
+        alert.setContentText("Produk: " + product.getName());
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    boolean deleted = productService.deleteProduct(product.getId());
+                    if (deleted) {
+                        AlertUtil.showInfo("Berhasil", "Produk berhasil dihapus!");
+                        refreshProducts();
+                    } else {
+                        AlertUtil.showError("Error", "Gagal menghapus produk.");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error menghapus produk: " + e.getMessage());
+                    AlertUtil.showError("Error", "Gagal menghapus produk: " + e.getMessage());
+                }
+            }
+        });
     }
 
     /**
