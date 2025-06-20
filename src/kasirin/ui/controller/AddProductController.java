@@ -5,90 +5,107 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import kasirin.data.model.Product;
+import kasirin.data.model.ProductVariation;
 import kasirin.data.model.Store;
 import kasirin.data.model.User;
 import kasirin.service.ProductService;
+import kasirin.service.ProductVariationService;
 import kasirin.ui.util.AlertUtil;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller untuk Dialog Tambah Produk
- * Menangani pembuatan produk baru dalam sistem
+ * Simplified Controller untuk Dialog Tambah Produk dengan Satu Variasi
+ * Menangani pembuatan produk baru dengan satu variasi saja
  *
  * @author yamaym
  */
 public class AddProductController implements Initializable {
 
+    // Product fields
     @FXML private TextField nameField;
     @FXML private TextField categoryField;
     @FXML private TextField basePriceField;
     @FXML private TextArea descriptionArea;
-    @FXML private TextField imageUrlField;
+
+    // Single variation fields
+    @FXML private TextField variationTypeField;
+    @FXML private TextField variationValueField;
+    @FXML private TextField variationStockField;
+    @FXML private TextField variationPriceField;
+
+    // Action buttons
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
     private User currentUser;
     private Store currentStore;
     private ProductService productService;
+    private ProductVariationService variationService;
     private ProductsController parentController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         productService = new ProductService();
-        setupValidation();
+        variationService = new ProductVariationService();
 
-        // TODO: Tim dapat menambahkan inisialisasi tambahan di sini
-        // Contoh: setup auto-complete untuk kategori, validasi khusus, dll.
+        setupValidation();
+        setupDefaultValues();
     }
 
     /**
      * Inisialisasi dengan data dari controller parent
-     *
-     * @param user User yang sedang login
-     * @param store Toko yang sedang dikelola
-     * @param parentController Controller parent untuk refresh data
      */
     public void initializeWithData(User user, Store store, ProductsController parentController) {
         this.currentUser = user;
         this.currentStore = store;
         this.parentController = parentController;
 
-        // TODO: Tim dapat menambahkan logika inisialisasi khusus berdasarkan role user
-        // Contoh: jika user adalah staff, batasi kategori yang bisa dipilih
         if (user.getRole().getValue().equals("staff")) {
-            // Implementasi pembatasan untuk staff
+            // Implementasi pembatasan untuk staff jika diperlukan
         }
     }
 
     /**
      * Setup validasi untuk field input
-     * Tim dapat menambahkan validasi tambahan sesuai kebutuhan bisnis
      */
     private void setupValidation() {
-        // Validasi harga: hanya angka dan titik desimal
+        // Validasi harga produk: hanya angka dan titik desimal
         basePriceField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*(\\.\\d*)?")) {
                 basePriceField.setText(oldValue);
             }
         });
 
-        // TODO: Tim dapat menambahkan validasi tambahan di sini
-        // Contoh:
-        // - Validasi nama produk tidak boleh duplikat dalam satu toko
-        // - Validasi kategori harus sesuai dengan daftar yang diizinkan
-        // - Validasi URL gambar harus format yang valid
+        // Validasi harga tambahan variasi: hanya angka dan titik desimal
+        variationPriceField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*(\\.\\d*)?")) {
+                variationPriceField.setText(oldValue);
+            }
+        });
 
-        nameField.textProperty().addListener((observable, oldValue, newValue) -> {
-            // TODO: Implementasi validasi nama produk
-            // Cek duplikasi nama dalam toko yang sama
+        // Validasi stok variasi: hanya angka
+        variationStockField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                variationStockField.setText(oldValue);
+            }
         });
     }
 
     /**
+     * Setup nilai default untuk variasi
+     */
+    private void setupDefaultValues() {
+        // Set default values untuk memudahkan input
+        variationTypeField.setText("Default");
+        variationValueField.setText("Standard");
+        variationStockField.setText("0");
+        variationPriceField.setText("0");
+    }
+
+    /**
      * Handler untuk tombol simpan
-     * Memproses penyimpanan produk baru ke database
      */
     @FXML
     private void handleSave() {
@@ -97,55 +114,54 @@ public class AddProductController implements Initializable {
         }
 
         try {
-            // Ambil data dari form
+            // Ambil data produk dari form
             String name = nameField.getText().trim();
             String category = categoryField.getText().trim();
             double basePrice = Double.parseDouble(basePriceField.getText().trim());
             String description = descriptionArea.getText().trim();
-            String imageUrl = imageUrlField.getText().trim();
-
-            // TODO: Tim dapat menambahkan validasi bisnis tambahan di sini
-            // Contoh:
-            // - Cek apakah kategori valid untuk toko ini
-            // - Validasi harga minimum/maksimum
-            // - Proses upload gambar jika diperlukan
-
+            String imageUrl = null;
             // Buat objek produk baru
             Product product = new Product(name, currentStore.getId(), category, basePrice, description, imageUrl);
 
-            // TODO: Tim dapat menambahkan logika tambahan sebelum menyimpan
-            // Contoh: set created_by, created_date, dll jika ada field tambahan
-
-            // Simpan ke database melalui service
+            // Simpan produk ke database
             int productId = productService.addProduct(product);
 
             if (productId > 0) {
-                // TODO: Tim dapat menambahkan logika setelah berhasil menyimpan
-                // Contoh:
-                // - Log aktivitas user
-                // - Kirim notifikasi ke admin
-                // - Update cache produk
+                // Ambil data variasi dari form
+                String type = variationTypeField.getText().trim();
+                String value = variationValueField.getText().trim();
+                int stock = Integer.parseInt(variationStockField.getText().trim());
+                double additionalPrice = variationPriceField.getText().trim().isEmpty() ?
+                        0.0 : Double.parseDouble(variationPriceField.getText().trim());
 
-                AlertUtil.showInfo("Berhasil", "Produk berhasil ditambahkan!");
+                // Buat variasi untuk produk
+                ProductVariation variation = new ProductVariation(productId, type, value, additionalPrice, stock);
+                int variationId = variationService.addProductVariation(variation);
 
-                // Refresh data di parent controller
-                if (parentController != null) {
-                    parentController.reloadProducts();
+                if (variationId > 0) {
+                    AlertUtil.showInfo("Berhasil",
+                            "Produk '" + name + "' berhasil ditambahkan dengan variasi '" + value + "'!");
+
+                    // Refresh data di parent controller
+                    if (parentController != null) {
+                        parentController.reloadProducts();
+                    }
+
+                    handleCancel();
+                } else {
+                    // Jika variasi gagal, hapus produk yang sudah dibuat
+                    productService.deleteProduct(productId);
+                    AlertUtil.showError("Gagal", "Gagal menambahkan variasi produk. Produk dibatalkan.");
                 }
-
-                // Tutup dialog
-                handleCancel();
             } else {
                 AlertUtil.showError("Gagal", "Gagal menambahkan produk. Silakan coba lagi.");
             }
 
         } catch (NumberFormatException e) {
-            AlertUtil.showError("Input Tidak Valid", "Silakan masukkan harga yang valid.");
-            basePriceField.requestFocus();
+            AlertUtil.showError("Input Tidak Valid", "Silakan masukkan nilai numerik yang valid.");
         } catch (IllegalArgumentException e) {
             AlertUtil.showError("Validasi Gagal", e.getMessage());
         } catch (Exception e) {
-            // TODO: Tim dapat menambahkan logging error yang lebih detail
             System.err.println("Error saat menyimpan produk: " + e.getMessage());
             AlertUtil.showError("Error", "Terjadi kesalahan: " + e.getMessage());
         }
@@ -153,26 +169,21 @@ public class AddProductController implements Initializable {
 
     /**
      * Validasi input form
-     * Tim dapat menambahkan aturan validasi sesuai kebutuhan bisnis
-     *
-     * @return true jika semua input valid
      */
     private boolean validateInput() {
-        // Validasi nama produk
+        // Validasi produk
         if (nameField.getText().trim().isEmpty()) {
             AlertUtil.showError("Validasi Gagal", "Nama produk wajib diisi!");
             nameField.requestFocus();
             return false;
         }
 
-        // Validasi kategori
         if (categoryField.getText().trim().isEmpty()) {
             AlertUtil.showError("Validasi Gagal", "Kategori wajib diisi!");
             categoryField.requestFocus();
             return false;
         }
 
-        // Validasi harga
         if (basePriceField.getText().trim().isEmpty()) {
             AlertUtil.showError("Validasi Gagal", "Harga dasar wajib diisi!");
             basePriceField.requestFocus();
@@ -186,21 +197,58 @@ public class AddProductController implements Initializable {
                 basePriceField.requestFocus();
                 return false;
             }
-
-            // TODO: Tim dapat menambahkan validasi harga tambahan
-            // Contoh: harga maksimum, harga minimum berdasarkan kategori
-
         } catch (NumberFormatException e) {
             AlertUtil.showError("Validasi Gagal", "Silakan masukkan harga yang valid!");
             basePriceField.requestFocus();
             return false;
         }
 
-        // TODO: Tim dapat menambahkan validasi tambahan di sini
-        // Contoh:
-        // - Validasi format URL gambar
-        // - Validasi panjang deskripsi
-        // - Validasi kategori terhadap daftar yang diizinkan
+        // Validasi variasi
+        if (variationTypeField.getText().trim().isEmpty()) {
+            AlertUtil.showError("Validasi Gagal", "Tipe variasi wajib diisi!");
+            variationTypeField.requestFocus();
+            return false;
+        }
+
+        if (variationValueField.getText().trim().isEmpty()) {
+            AlertUtil.showError("Validasi Gagal", "Nilai variasi wajib diisi!");
+            variationValueField.requestFocus();
+            return false;
+        }
+
+        if (variationStockField.getText().trim().isEmpty()) {
+            AlertUtil.showError("Validasi Gagal", "Stok wajib diisi!");
+            variationStockField.requestFocus();
+            return false;
+        }
+
+        try {
+            int stock = Integer.parseInt(variationStockField.getText().trim());
+            if (stock < 0) {
+                AlertUtil.showError("Validasi Gagal", "Stok tidak boleh negatif!");
+                variationStockField.requestFocus();
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            AlertUtil.showError("Validasi Gagal", "Silakan masukkan stok yang valid!");
+            variationStockField.requestFocus();
+            return false;
+        }
+
+        if (!variationPriceField.getText().trim().isEmpty()) {
+            try {
+                double price = Double.parseDouble(variationPriceField.getText().trim());
+                if (price < 0) {
+                    AlertUtil.showError("Validasi Gagal", "Harga tambahan tidak boleh negatif!");
+                    variationPriceField.requestFocus();
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                AlertUtil.showError("Validasi Gagal", "Silakan masukkan harga tambahan yang valid!");
+                variationPriceField.requestFocus();
+                return false;
+            }
+        }
 
         return true;
     }
@@ -210,7 +258,6 @@ public class AddProductController implements Initializable {
      */
     @FXML
     private void handleCancel() {
-        // TODO: Tim dapat menambahkan konfirmasi jika ada perubahan yang belum disimpan
         Stage currentStage = (Stage) cancelButton.getScene().getWindow();
         currentStage.close();
     }

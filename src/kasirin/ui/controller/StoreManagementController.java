@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import kasirin.data.model.Role;
 import kasirin.data.model.Store;
 import kasirin.data.model.User;
 import kasirin.ui.util.NavigationUtil;
@@ -16,8 +17,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller for the Store Management System
- * Handles navigation between different modules (Dashboard, Products, Transactions, Reports, Cashier)
+ * Enhanced Store Management Controller with Role-based Access Control
+ * Fixed method names to match FXML onAction references
  *
  * @author yamaym
  */
@@ -55,29 +56,141 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
-     * Initialize with user and store data
+     * Initialize with user and store data, applying role-based access control
      */
     public void initializeWithData(User user, Store store) {
         try {
             this.currentUser = user;
             this.currentStore = store;
 
-            // Update store information in sidebar
-            storeNameLabel.setText(store.getName());
-            storeTypeLabel.setText(store.getType() != null ? store.getType() : "General Store");
+            setupStoreInformation();
+            setupRoleBasedAccess();
 
             // Load dashboard by default
             showDashboard();
 
-            System.out.println("StoreManagementController initialized with store: " + store.getName());
+            System.out.println("Store management initialized for user: " + user.getName() +
+                    " (Role: " + user.getRole().getValue() + ") at store: " + store.getName());
         } catch (Exception e) {
-            System.err.println("Error initializing with data: " + e.getMessage());
+            System.err.println("Error initializing store management with data: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * Show Dashboard view
+     * Setup store information display
+     */
+    private void setupStoreInformation() {
+        storeNameLabel.setText(currentStore.getName());
+        storeTypeLabel.setText(currentStore.getType() != null ? currentStore.getType() : "General Store");
+    }
+
+    /**
+     * Setup role-based access control for menu items
+     */
+    private void setupRoleBasedAccess() {
+        Role userRole = currentUser.getRole();
+
+        System.out.println("Setting up role-based access for role: " + userRole.getValue());
+
+        switch (userRole) {
+            case STAFF:
+                setupStaffAccess();
+                break;
+            case ADMIN:
+                setupAdminAccess();
+                break;
+            case OWNER:
+                setupOwnerAccess();
+                break;
+            default:
+                setupDefaultAccess();
+                break;
+        }
+    }
+
+    /**
+     * Setup access for STAFF role - Limited access
+     */
+    private void setupStaffAccess() {
+        System.out.println("Configuring STAFF access - Limited permissions");
+
+        // Staff can access
+        dashboardBtn.setDisable(false);
+        transactionsBtn.setDisable(false);
+        reportsBtn.setDisable(false);
+
+        // Staff CANNOT access
+        productsBtn.setDisable(true);
+        cashierBtn.setDisable(true);
+        settingsBtn.setDisable(true);
+
+        // Update button tooltips for disabled features
+        productsBtn.setTooltip(new Tooltip("Akses ditolak - Hanya Admin/Owner yang dapat mengelola produk"));
+        cashierBtn.setTooltip(new Tooltip("Akses ditolak - Hanya Admin/Owner yang dapat mengelola kasir"));
+        settingsBtn.setTooltip(new Tooltip("Akses ditolak - Hanya Admin/Owner yang dapat mengakses pengaturan"));
+
+        // Update button text to show restrictions
+        productsBtn.setText("🔒 Produk");
+        cashierBtn.setText("🔒 Manajemen Kasir");
+        settingsBtn.setText("🔒 Pengaturan");
+
+        System.out.println("STAFF access configured - Products and Cashier management disabled");
+    }
+
+    /**
+     * Setup access for ADMIN role - Full access except owner-specific features
+     */
+    private void setupAdminAccess() {
+        System.out.println("Configuring ADMIN access - Full permissions");
+
+        // Admin can access everything
+        dashboardBtn.setDisable(false);
+        productsBtn.setDisable(false);
+        transactionsBtn.setDisable(false);
+        reportsBtn.setDisable(false);
+        cashierBtn.setDisable(false);
+        settingsBtn.setDisable(false);
+
+        System.out.println("ADMIN access configured - Full access granted");
+    }
+
+    /**
+     * Setup access for OWNER role - Complete access
+     */
+    private void setupOwnerAccess() {
+        System.out.println("Configuring OWNER access - Complete permissions");
+
+        // Owner can access everything
+        dashboardBtn.setDisable(false);
+        productsBtn.setDisable(false);
+        transactionsBtn.setDisable(false);
+        reportsBtn.setDisable(false);
+        cashierBtn.setDisable(false);
+        settingsBtn.setDisable(false);
+
+        System.out.println("OWNER access configured - Complete access granted");
+    }
+
+    /**
+     * Setup default access (fallback)
+     */
+    private void setupDefaultAccess() {
+        System.out.println("Configuring DEFAULT access - Minimal permissions");
+
+        // Default minimal access
+        dashboardBtn.setDisable(false);
+        transactionsBtn.setDisable(false);
+
+        // Disable other features
+        productsBtn.setDisable(true);
+        reportsBtn.setDisable(true);
+        cashierBtn.setDisable(true);
+        settingsBtn.setDisable(true);
+    }
+
+    /**
+     * Show Dashboard view - Method name matches FXML onAction
      */
     @FXML
     private void showDashboard() {
@@ -92,10 +205,17 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
-     * Show Products management view
+     * Show Products management view - Method name matches FXML onAction
      */
     @FXML
     private void showProducts() {
+        if (!hasProductAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk mengakses manajemen produk.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
+
         try {
             loadView("/kasirin/ui/fxml/ProductsView.fxml", "Products");
             updateActiveButton(productsBtn);
@@ -107,7 +227,7 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
-     * Show Transactions/POS view
+     * Show Transactions view - Method name matches FXML onAction
      */
     @FXML
     private void showTransactions() {
@@ -122,7 +242,7 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
-     * Show Reports view
+     * Show Reports view - Method name matches FXML onAction
      */
     @FXML
     private void showReports() {
@@ -137,10 +257,17 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
-     * Show Cashier management view
+     * Show Cashier management view - Method name matches FXML onAction
      */
     @FXML
     private void showCashier() {
+        if (!hasCashierManagementAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk mengakses manajemen kasir.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
+
         try {
             loadView("/kasirin/ui/fxml/CashierView.fxml", "Cashier");
             updateActiveButton(cashierBtn);
@@ -152,15 +279,22 @@ public class StoreManagementController implements Initializable {
     }
 
     /**
-     * Show Settings view
+     * Show Settings view - Method name matches FXML onAction
      */
     @FXML
     private void showSettings() {
+        if (!hasSettingsAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk mengakses pengaturan.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
+
         AlertUtil.showInfo("Settings", "Settings module will be available soon!");
     }
 
     /**
-     * Go back to main dashboard
+     * Go back to main dashboard - Method name matches FXML onAction
      */
     @FXML
     private void backToMain() {
@@ -221,15 +355,49 @@ public class StoreManagementController implements Initializable {
         activeButton = newActiveButton;
     }
 
+    // Role checking methods
+
     /**
-     * Get current user
+     * Check if user has access to product management
+     */
+    private boolean hasProductAccess() {
+        Role userRole = currentUser.getRole();
+        return userRole == Role.ADMIN || userRole == Role.OWNER;
+    }
+
+    /**
+     * Check if user has access to cashier management
+     */
+    private boolean hasCashierManagementAccess() {
+        Role userRole = currentUser.getRole();
+        return userRole == Role.ADMIN || userRole == Role.OWNER;
+    }
+
+    /**
+     * Check if user has access to settings
+     */
+    private boolean hasSettingsAccess() {
+        Role userRole = currentUser.getRole();
+        return userRole == Role.ADMIN || userRole == Role.OWNER;
+    }
+
+    /**
+     * Check if user has access to reports
+     */
+    private boolean hasReportsAccess() {
+        // All roles can access reports, but with different levels of detail
+        return true;
+    }
+
+    /**
+     * Get current user for other controllers
      */
     public User getCurrentUser() {
         return currentUser;
     }
 
     /**
-     * Get current store
+     * Get current store for other controllers
      */
     public Store getCurrentStore() {
         return currentStore;

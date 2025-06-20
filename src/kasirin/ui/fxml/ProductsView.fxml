@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.ProductsController" styleClass="products-container">
+<BorderPane styleClass="products-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.ProductsController">
 
     <!-- Header -->
     <top>
-        <VBox styleClass="page-header" spacing="20.0">
+        <VBox spacing="20.0" styleClass="page-header">
             <padding>
                 <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
             </padding>
 
             <HBox alignment="CENTER_LEFT" spacing="20.0">
                 <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                    <Label text="Products Management" styleClass="page-title" />
-                    <Label text="Manage your store products and variations" styleClass="page-subtitle" />
+                    <Label styleClass="page-title" text="Products Management" />
+                    <Label styleClass="page-subtitle" text="Manage your store products and variations" />
                 </VBox>
-                <Button fx:id="addProductBtn" text="+ Add Product" onAction="#showAddProduct" styleClass="primary-button" />
+                <Button fx:id="addProductBtn" onAction="#showAddProduct" styleClass="primary-button" text="+ Add Product" />
             </HBox>
 
             <!-- Search and Filter -->
-            <HBox spacing="15.0" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="Search products..." prefWidth="300.0" styleClass="search-field" />
-                <ComboBox fx:id="categoryFilter" promptText="All Categories" prefWidth="200.0" styleClass="filter-combo" />
-                <Button fx:id="searchBtn" text="🔍" onAction="#searchProducts" styleClass="icon-button" />
-                <Button fx:id="refreshBtn" text="🔄" onAction="#refreshProducts" styleClass="icon-button" />
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
+                <TextField fx:id="searchField" prefWidth="300.0" promptText="Search products..." styleClass="search-field" />
+                <Button fx:id="searchBtn" onAction="#searchProducts" styleClass="icon-button" text="🔍" />
+                <Button fx:id="refreshBtn" onAction="#refreshProducts" styleClass="icon-button" text="🔄" />
             </HBox>
         </VBox>
     </top>
@@ -43,72 +53,67 @@
 
                 <TableView fx:id="productsTable" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="productIdCol" text="ID" prefWidth="60.0" />
-                        <TableColumn fx:id="productNameCol" text="Product Name" prefWidth="200.0" />
-                        <TableColumn fx:id="productCategoryCol" text="Category" prefWidth="120.0" />
-                        <TableColumn fx:id="productBasePriceCol" text="Base Price" prefWidth="100.0" />
-                        <TableColumn fx:id="productStockCol" text="Stock" prefWidth="80.0" />
-                        <TableColumn fx:id="productActionsCol" text="Actions" prefWidth="120.0" />
+                        <TableColumn fx:id="productIdCol" prefWidth="60.0" text="ID" />
+                        <TableColumn fx:id="productNameCol" prefWidth="200.0" text="Product Name" />
+                        <TableColumn fx:id="productCategoryCol" prefWidth="120.0" text="Category" />
+                        <TableColumn fx:id="productBasePriceCol" prefWidth="100.0" text="Base Price" />
+                        <TableColumn fx:id="productStockCol" prefWidth="80.0" text="Stock" />
+                        <TableColumn fx:id="productActionsCol" prefWidth="120.0" text="Actions" />
                     </columns>
                 </TableView>
             </VBox>
 
             <!-- Product Details Panel -->
-            <VBox styleClass="details-panel" spacing="20.0">
+            <VBox spacing="20.0" styleClass="details-panel">
                 <padding>
                     <Insets bottom="20.0" left="15.0" right="30.0" top="20.0" />
                 </padding>
 
-                <Label text="Product Details" styleClass="panel-title" />
+                <Label styleClass="panel-title" text="Product Details" />
 
                 <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
                     <VBox fx:id="productDetailsContainer" spacing="15.0">
 
                         <!-- Product Info -->
-                        <VBox styleClass="info-section" spacing="10.0">
-                            <Label text="Product Information" styleClass="section-header" />
+                        <VBox spacing="10.0" styleClass="info-section">
+                            <Label styleClass="section-header" text="Product Information" />
                             <GridPane hgap="10.0" vgap="10.0">
                                 <columnConstraints>
                                     <ColumnConstraints hgrow="NEVER" minWidth="80.0" />
                                     <ColumnConstraints hgrow="ALWAYS" />
                                 </columnConstraints>
 
-                                <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="info-label" />
-                                <Label fx:id="detailNameLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="info-value" />
+                                <Label styleClass="info-label" text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                <Label fx:id="detailNameLabel" styleClass="info-value" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                                <Label text="Category:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="info-label" />
-                                <Label fx:id="detailCategoryLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="info-value" />
+                                <Label styleClass="info-label" text="Category:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                <Label fx:id="detailCategoryLabel" styleClass="info-value" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                                <Label text="Base Price:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="info-label" />
-                                <Label fx:id="detailBasePriceLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="info-value" />
+                                <Label styleClass="info-label" text="Base Price:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                <Label fx:id="detailBasePriceLabel" styleClass="info-value" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="info-label" />
-                                <Label fx:id="detailDescriptionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="info-value" wrapText="true" />
+                                <Label styleClass="info-label" text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                <Label fx:id="detailDescriptionLabel" styleClass="info-value" text="-" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <rowConstraints>
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                           <RowConstraints />
+                        </rowConstraints>
                             </GridPane>
                         </VBox>
 
                         <!-- Product Variations -->
-                        <VBox styleClass="info-section" spacing="10.0">
+                        <VBox spacing="10.0" styleClass="info-section">
                             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <Label text="Product Variations" styleClass="section-header" HBox.hgrow="ALWAYS" />
-                                <Button fx:id="addVariationBtn" text="+ Add" onAction="#showAddVariation" styleClass="small-button" />
+                                <Label styleClass="section-header" text="Product Variations" HBox.hgrow="ALWAYS" />
                             </HBox>
-
-                            <TableView fx:id="variationsTable" prefHeight="200.0">
-                                <columns>
-                                    <TableColumn fx:id="variationTypeCol" text="Type" prefWidth="80.0" />
-                                    <TableColumn fx:id="variationValueCol" text="Value" prefWidth="80.0" />
-                                    <TableColumn fx:id="variationStockCol" text="Stock" prefWidth="60.0" />
-                                    <TableColumn fx:id="variationPriceCol" text="+ Price" prefWidth="70.0" />
-                                    <TableColumn fx:id="variationActionsCol" text="Actions" prefWidth="60.0" />
-                                </columns>
-                            </TableView>
                         </VBox>
 
                         <!-- Actions -->
                         <VBox spacing="10.0">
-                            <Button fx:id="editProductBtn" text="Edit Product" onAction="#editProduct" styleClass="primary-button" maxWidth="Infinity" />
-                            <Button fx:id="deleteProductBtn" text="Delete Product" onAction="#deleteProduct" styleClass="danger-button" maxWidth="Infinity" />
+                            <Button fx:id="editProductBtn" maxWidth="Infinity" onAction="#editProduct" styleClass="primary-button" text="Edit Product" />
+                            <Button fx:id="deleteProductBtn" maxWidth="Infinity" onAction="#deleteProduct" styleClass="danger-button" text="Delete Product" />
                         </VBox>
                     </VBox>
                 </ScrollPane>

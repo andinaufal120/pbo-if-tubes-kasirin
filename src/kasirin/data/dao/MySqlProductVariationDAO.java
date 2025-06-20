@@ -25,7 +25,6 @@ public class MySqlProductVariationDAO implements ProductVariationDAO {
             stmt.setDouble(5, productVariation.getAdditionalPrice());
             stmt.executeUpdate();
 
-            // gets newly created primary key
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     result = rs.getInt(1);
@@ -41,7 +40,7 @@ public class MySqlProductVariationDAO implements ProductVariationDAO {
     public ProductVariation findProductVariation(int id) {
         ProductVariation productVariation = null;
 
-        String query = "SELECT * FROM Products WHERE id=?";
+        String query = "SELECT * FROM ProductsVariations WHERE id=?";
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
@@ -78,11 +77,11 @@ public class MySqlProductVariationDAO implements ProductVariationDAO {
             stmt.setInt(4, productVariation.getStocks());
             stmt.setDouble(5, productVariation.getAdditionalPrice());
             stmt.setInt(6, id);
-            result = stmt.executeUpdate(); // number of affected rows
+            result = stmt.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return result; // return the number of affected rows on success, return -1 on failure
+        return result;
     }
 
     @Override
@@ -97,14 +96,14 @@ public class MySqlProductVariationDAO implements ProductVariationDAO {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return result; // return the number of affected rows on success, return -1 on failure
+        return result;
     }
 
     @Override
     public List<ProductVariation> findAllProductVariations() {
         List<ProductVariation> result = new ArrayList<>();
 
-        String query = "SELECT * FROM Products";
+        String query = "SELECT * FROM ProductsVariations";
         try (Connection conn = MySqlDAOFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
@@ -120,6 +119,73 @@ public class MySqlProductVariationDAO implements ProductVariationDAO {
                 productVariation.setId(productVariationId);
                 result.add(productVariation);
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * Find product variations by product ID
+     */
+    public List<ProductVariation> findVariationsByProductId(int productId) {
+        List<ProductVariation> result = new ArrayList<>();
+
+        String query = "SELECT * FROM ProductsVariations WHERE product_id = ?";
+        try (Connection conn = MySqlDAOFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, productId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int productVariationId = rs.getInt("id");
+                    String type = rs.getString("type");
+                    String value = rs.getString("value");
+                    int stocks = rs.getInt("stocks");
+                    double additionalPrice = rs.getDouble("additional_price");
+
+                    ProductVariation productVariation = new ProductVariation(productId, type, value, additionalPrice, stocks);
+                    productVariation.setId(productVariationId);
+                    result.add(productVariation);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * Update stock for a specific variation
+     */
+    public int updateStock(int variationId, int newStock) {
+        int result = -1;
+
+        String query = "UPDATE ProductsVariations SET stocks=? WHERE id=?";
+        try (Connection conn = MySqlDAOFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, newStock);
+            stmt.setInt(2, variationId);
+            result = stmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * Reduce stock for a specific variation (used in transactions)
+     */
+    public int reduceStock(int variationId, int quantity) {
+        int result = -1;
+
+        String query = "UPDATE ProductsVariations SET stocks = stocks - ? WHERE id = ? AND stocks >= ?";
+        try (Connection conn = MySqlDAOFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, variationId);
+            stmt.setInt(3, quantity);
+            result = stmt.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

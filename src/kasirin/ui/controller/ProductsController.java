@@ -13,9 +13,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import kasirin.data.model.Product;
+import kasirin.data.model.ProductVariation;
 import kasirin.data.model.Store;
 import kasirin.data.model.User;
+import kasirin.data.model.Role;
 import kasirin.service.ProductService;
+import kasirin.service.ProductVariationService;
 import kasirin.ui.util.AlertUtil;
 
 import java.net.URL;
@@ -23,15 +26,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * Controller untuk Manajemen Produk
- * Menangani CRUD operasi untuk produk dan variasinya
+ * Enhanced Products Controller with Role-based Access Control
  *
  * @author yamaym
  */
 public class ProductsController implements Initializable {
 
     @FXML private TextField searchField;
-    @FXML private ComboBox<String> categoryFilter;
     @FXML private Button addProductBtn;
     @FXML private Button searchBtn;
     @FXML private Button refreshBtn;
@@ -50,20 +51,20 @@ public class ProductsController implements Initializable {
     @FXML private Label detailBasePriceLabel;
     @FXML private Label detailDescriptionLabel;
 
-    @FXML private TableView<Object> variationsTable;
-    @FXML private TableColumn<Object, String> variationTypeCol;
-    @FXML private TableColumn<Object, String> variationValueCol;
-    @FXML private TableColumn<Object, String> variationStockCol;
-    @FXML private TableColumn<Object, String> variationPriceCol;
-    @FXML private TableColumn<Object, String> variationActionsCol;
+    @FXML private TableView<ProductVariation> variationsTable;
+    @FXML private TableColumn<ProductVariation, String> variationTypeCol;
+    @FXML private TableColumn<ProductVariation, String> variationValueCol;
+    @FXML private TableColumn<ProductVariation, String> variationStockCol;
+    @FXML private TableColumn<ProductVariation, String> variationPriceCol;
+    @FXML private TableColumn<ProductVariation, String> variationActionsCol;
 
-    @FXML private Button addVariationBtn;
     @FXML private Button editProductBtn;
     @FXML private Button deleteProductBtn;
 
     private User currentUser;
     private Store currentStore;
     private ProductService productService;
+    private ProductVariationService variationService;
     private ObservableList<Product> productList;
     private Product selectedProduct;
 
@@ -71,6 +72,7 @@ public class ProductsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             productService = new ProductService();
+            variationService = new ProductVariationService();
             productList = FXCollections.observableArrayList();
 
             setupTables();
@@ -84,7 +86,7 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Inisialisasi dengan data user dan store
+     * Inisialisasi dengan data user dan store, dengan role-based access control
      *
      * @param user User yang sedang login
      * @param store Store yang sedang dikelola
@@ -94,16 +96,17 @@ public class ProductsController implements Initializable {
             this.currentUser = user;
             this.currentStore = store;
 
-            loadProducts();
-
-            // TODO: Tim dapat menambahkan logika berdasarkan role user
-            // Contoh: staff hanya bisa melihat produk yang mereka buat
-            if (user.getRole().getValue().equals("staff")) {
-                // Implementasi pembatasan untuk staff
-                setupStaffPermissions();
+            // Check role-based access first
+            if (!hasProductAccess()) {
+                showAccessDenied();
+                return;
             }
 
-            System.out.println("Produk dimuat untuk toko: " + store.getName());
+            loadProducts();
+            setupRoleBasedPermissions();
+
+            System.out.println("Produk dimuat untuk toko: " + store.getName() +
+                    " oleh user: " + user.getName() + " (Role: " + user.getRole().getValue() + ")");
         } catch (Exception e) {
             System.err.println("Error inisialisasi produk dengan data: " + e.getMessage());
             e.printStackTrace();
@@ -111,15 +114,75 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Setup permissions khusus untuk staff
-     * TODO: Tim implementasikan pembatasan akses untuk staff
+     * Check if current user has access to product management
      */
-    private void setupStaffPermissions() {
-        // TODO: Implementasi pembatasan untuk staff
-        // Contoh:
-        // - Hanya bisa edit produk yang mereka buat
-        // - Tidak bisa hapus produk
-        // - Batasi kategori yang bisa dibuat
+    private boolean hasProductAccess() {
+        if (currentUser == null) return false;
+        Role userRole = currentUser.getRole();
+        return userRole == Role.ADMIN || userRole == Role.OWNER;
+    }
+
+    /**
+     * Show access denied message for staff users
+     */
+    private void showAccessDenied() {
+        // Disable all interactive elements
+        addProductBtn.setDisable(true);
+        searchBtn.setDisable(true);
+        refreshBtn.setDisable(true);
+        productsTable.setDisable(true);
+        editProductBtn.setDisable(true);
+        deleteProductBtn.setDisable(true);
+
+        System.out.println("Access denied for user: " + currentUser.getName() +
+                " (Role: " + currentUser.getRole().getValue() + ")");
+    }
+
+    /**
+     * Setup role-based permissions for different user roles
+     */
+    private void setupRoleBasedPermissions() {
+        Role userRole = currentUser.getRole();
+
+        switch (userRole) {
+            case STAFF:
+                // Staff should not reach here due to hasProductAccess() check
+                showAccessDenied();
+                break;
+            case ADMIN:
+                setupAdminPermissions();
+                break;
+            case OWNER:
+                setupOwnerPermissions();
+                break;
+            default:
+                showAccessDenied();
+                break;
+        }
+    }
+
+    /**
+     * Setup permissions for Admin role
+     */
+    private void setupAdminPermissions() {
+        // Admin has full access to product management
+        addProductBtn.setDisable(false);
+        editProductBtn.setDisable(false);
+        deleteProductBtn.setDisable(false);
+
+        System.out.println("Admin permissions configured for product management");
+    }
+
+    /**
+     * Setup permissions for Owner role
+     */
+    private void setupOwnerPermissions() {
+        // Owner has complete access to everything
+        addProductBtn.setDisable(false);
+        editProductBtn.setDisable(false);
+        deleteProductBtn.setDisable(false);
+
+        System.out.println("Owner permissions configured for product management");
     }
 
     /**
@@ -145,14 +208,14 @@ public class ProductsController implements Initializable {
             }
         });
 
-        // Kolom stok (placeholder - TODO: Tim implementasikan dari ProductVariations)
+        // Kolom stok - hitung dari variasi produk
         productStockCol.setCellValueFactory(cellData -> {
-            // TODO: Tim implementasikan perhitungan total stok dari variasi produk
-            // Query: SELECT SUM(stocks) FROM ProductsVariations WHERE product_id = ?
-            return new javafx.beans.property.SimpleStringProperty("N/A");
+            Product product = cellData.getValue();
+            int totalStock = variationService.getTotalStockForProduct(product.getId());
+            return new javafx.beans.property.SimpleStringProperty(String.valueOf(totalStock));
         });
 
-        // Setup kolom aksi dengan tombol edit dan hapus
+        // Setup kolom aksi dengan role-based access
         productActionsCol.setCellFactory(col -> {
             TableCell<Product, Void> cell = new TableCell<Product, Void>() {
                 private final Button editBtn = new Button("✏️");
@@ -163,11 +226,19 @@ public class ProductsController implements Initializable {
                     deleteBtn.getStyleClass().add("danger-button");
 
                     editBtn.setOnAction(event -> {
+                        if (!hasProductAccess()) {
+                            AlertUtil.showWarning("Akses Ditolak", "Anda tidak memiliki izin untuk mengedit produk.");
+                            return;
+                        }
                         Product product = getTableView().getItems().get(getIndex());
                         openEditProductDialog(product);
                     });
 
                     deleteBtn.setOnAction(event -> {
+                        if (!hasProductAccess()) {
+                            AlertUtil.showWarning("Akses Ditolak", "Anda tidak memiliki izin untuk menghapus produk.");
+                            return;
+                        }
                         Product product = getTableView().getItems().get(getIndex());
                         handleDeleteProduct(product);
                     });
@@ -179,9 +250,14 @@ public class ProductsController implements Initializable {
                     if (empty) {
                         setGraphic(null);
                     } else {
-                        javafx.scene.layout.HBox buttons = new javafx.scene.layout.HBox(5);
-                        buttons.getChildren().addAll(editBtn, deleteBtn);
-                        setGraphic(buttons);
+                        // Only show action buttons if user has access
+                        if (hasProductAccess()) {
+                            javafx.scene.layout.HBox buttons = new javafx.scene.layout.HBox(5);
+                            buttons.getChildren().addAll(editBtn, deleteBtn);
+                            setGraphic(buttons);
+                        } else {
+                            setGraphic(null);
+                        }
                     }
                 }
             };
@@ -196,8 +272,12 @@ public class ProductsController implements Initializable {
                 selectedProduct = newSelection;
                 showProductDetails(newSelection);
                 loadProductVariations(newSelection);
-                editProductBtn.setDisable(false);
-                deleteProductBtn.setDisable(false);
+
+                // Enable/disable buttons based on role
+                if (hasProductAccess()) {
+                    editProductBtn.setDisable(false);
+                    deleteProductBtn.setDisable(false);
+                }
             } else {
                 selectedProduct = null;
                 clearProductDetails();
@@ -212,40 +292,41 @@ public class ProductsController implements Initializable {
 
     /**
      * Setup tabel variasi produk
-     * TODO: Tim implementasikan loading data variasi dari database
      */
     private void setupVariationsTable() {
-        // TODO: Tim implementasikan kolom variasi dengan data real dari ProductsVariations
         variationTypeCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Size"));
         variationValueCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Large"));
         variationStockCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("25"));
         variationPriceCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Rp 5,000"));
         variationActionsCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("Edit"));
-
-        // TODO: Tim implementasikan loading variasi produk
-        // Query: SELECT * FROM ProductsVariations WHERE product_id = ?
     }
 
     /**
      * Load variasi untuk produk yang dipilih
-     * TODO: Tim implementasikan loading dari database
-     *
-     * @param product Produk yang dipilih
      */
     private void loadProductVariations(Product product) {
-        // TODO: Tim implementasikan loading variasi produk dari database
-        // Gunakan ProductVariationService untuk mengambil data
-        // Query: SELECT * FROM ProductsVariations WHERE product_id = ?
+        try {
+            List<ProductVariation> productVariations = variationService.getVariationsByProductId(product.getId());
+
+            // Clear existing data
+            variationsTable.getItems().clear();
+
+            // Convert to observable list and add to table
+            ObservableList<ProductVariation> variationsList = FXCollections.observableArrayList(productVariations);
+            variationsTable.setItems(variationsList);
+
+        } catch (Exception e) {
+            System.err.println("Error loading product variations: " + e.getMessage());
+            e.printStackTrace();
+            AlertUtil.showError("Error", "Gagal memuat variasi produk: " + e.getMessage());
+        }
     }
 
     /**
      * Setup filter dan dropdown
      */
     private void setupFilters() {
-        // TODO: Tim dapat mengambil kategori dari database untuk dropdown
-        // Query: SELECT DISTINCT category FROM Products WHERE store_id = ?
-        categoryFilter.getItems().addAll("Semua Kategori", "Makanan", "Minuman", "Snack", "Lainnya");
-        categoryFilter.setValue("Semua Kategori");
+        // Method ini dikosongkan karena categoryFilter tidak ada di FXML
     }
 
     /**
@@ -263,9 +344,6 @@ public class ProductsController implements Initializable {
                 }
             }
 
-            // TODO: Tim dapat menambahkan sorting default
-            // Contoh: sort berdasarkan nama, tanggal dibuat, dll.
-
             System.out.println("Dimuat " + productList.size() + " produk untuk toko: " + currentStore.getName());
         } catch (Exception e) {
             System.err.println("Error memuat produk: " + e.getMessage());
@@ -276,17 +354,12 @@ public class ProductsController implements Initializable {
 
     /**
      * Tampilkan detail produk di panel detail
-     *
-     * @param product Produk yang dipilih
      */
     private void showProductDetails(Product product) {
         detailNameLabel.setText(product.getName());
         detailCategoryLabel.setText(product.getCategory());
         detailBasePriceLabel.setText(String.format("Rp %,.0f", product.getBasePrice()));
         detailDescriptionLabel.setText(product.getDescription() != null ? product.getDescription() : "Tidak ada deskripsi");
-
-        // TODO: Tim dapat menambahkan detail tambahan
-        // Contoh: gambar produk, total stok, tanggal dibuat, dll.
     }
 
     /**
@@ -300,10 +373,17 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Buka dialog tambah produk
+     * Buka dialog tambah produk - dengan role check
      */
     @FXML
     private void showAddProduct() {
+        if (!hasProductAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk menambah produk.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
+
         try {
             URL fxmlLocation = getClass().getResource("/kasirin/ui/fxml/AddProductView.fxml");
             if (fxmlLocation == null) {
@@ -341,15 +421,17 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Buka dialog edit produk
-     *
-     * @param product Produk yang akan diedit
+     * Buka dialog edit produk - dengan role check
      */
     private void openEditProductDialog(Product product) {
-        try {
-            // TODO: Tim dapat menambahkan validasi permission di sini
-            // Contoh: staff hanya bisa edit produk yang mereka buat
+        if (!hasProductAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk mengedit produk.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
 
+        try {
             URL fxmlLocation = getClass().getResource("/kasirin/ui/fxml/EditProductView.fxml");
             if (fxmlLocation == null) {
                 AlertUtil.showError("Error", "File EditProductView.fxml tidak ditemukan");
@@ -386,16 +468,15 @@ public class ProductsController implements Initializable {
     }
 
     /**
-     * Handler untuk hapus produk
-     *
-     * @param product Produk yang akan dihapus
+     * Handler untuk hapus produk - dengan role check
      */
     private void handleDeleteProduct(Product product) {
-        // TODO: Tim dapat menambahkan validasi sebelum hapus
-        // Contoh:
-        // - Cek apakah produk masih memiliki stok
-        // - Cek apakah produk pernah ada dalam transaksi
-        // - Validasi permission user
+        if (!hasProductAccess()) {
+            AlertUtil.showWarning("Akses Ditolak",
+                    "Anda tidak memiliki izin untuk menghapus produk.\n" +
+                            "Fitur ini hanya tersedia untuk Admin dan Owner.");
+            return;
+        }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Hapus Produk");
@@ -405,12 +486,6 @@ public class ProductsController implements Initializable {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    // TODO: Tim perlu implementasi soft delete atau backup data
-                    // Sebelum menghapus:
-                    // 1. Backup data produk dan variasinya
-                    // 2. Cek referensi di tabel TransactionDetails
-                    // 3. Update atau hapus variasi produk terlebih dahulu
-
                     boolean deleted = productService.deleteProduct(product.getId());
                     if (deleted) {
                         AlertUtil.showInfo("Berhasil", "Produk berhasil dihapus!");
@@ -431,12 +506,8 @@ public class ProductsController implements Initializable {
     @FXML
     private void searchProducts() {
         String searchTerm = searchField.getText().trim().toLowerCase();
-        String category = categoryFilter.getValue();
 
         try {
-            // TODO: Tim dapat mengoptimalkan dengan query database langsung
-            // Saat ini filter di memori, bisa dibuat query LIKE di database
-
             List<Product> allProducts = productService.getAllProducts();
             productList.clear();
 
@@ -446,16 +517,11 @@ public class ProductsController implements Initializable {
                             product.getName().toLowerCase().contains(searchTerm) ||
                             product.getCategory().toLowerCase().contains(searchTerm);
 
-                    boolean matchesCategory = "Semua Kategori".equals(category) ||
-                            product.getCategory().equals(category);
-
-                    if (matchesSearch && matchesCategory) {
+                    if (matchesSearch) {
                         productList.add(product);
                     }
                 }
             }
-
-            // TODO: Tim dapat menambahkan highlight hasil pencarian
 
         } catch (Exception e) {
             AlertUtil.showError("Error", "Pencarian gagal: " + e.getMessage());
@@ -468,27 +534,11 @@ public class ProductsController implements Initializable {
     @FXML
     private void refreshProducts() {
         searchField.clear();
-        categoryFilter.setValue("Semua Kategori");
         loadProducts();
         clearProductDetails();
         selectedProduct = null;
         editProductBtn.setDisable(true);
         deleteProductBtn.setDisable(true);
-    }
-
-    /**
-     * Handler untuk tambah variasi produk
-     */
-    @FXML
-    private void showAddVariation() {
-        if (selectedProduct == null) {
-            AlertUtil.showWarning("Tidak Ada Produk", "Silakan pilih produk terlebih dahulu untuk menambah variasi.");
-            return;
-        }
-
-        // TODO: Tim implementasikan dialog tambah variasi produk
-        // Buat AddVariationController dan AddVariationView.fxml
-        AlertUtil.showInfo("Tambah Variasi", "Fitur tambah variasi akan segera tersedia!");
     }
 
     /**

@@ -3,59 +3,105 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.EditProductController" styleClass="create-store-container" alignment="CENTER" spacing="20.0">
+<VBox alignment="CENTER" spacing="20.0" styleClass="create-store-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kasirin.ui.controller.EditProductController">
     <padding>
-        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <VBox alignment="CENTER" spacing="25.0" styleClass="create-store-form">
-        <padding>
-            <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
-        </padding>
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox alignment="CENTER" spacing="25.0" styleClass="create-store-form">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
 
-        <!-- Header -->
-        <VBox alignment="CENTER" spacing="10.0">
-            <Label text="Edit Product" styleClass="title" />
-            <Label text="Update product information" styleClass="subtitle" />
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="10.0">
+                <Label styleClass="title" text="Edit Product" />
+                <Label styleClass="subtitle" text="Update product information and variation details" />
+            </VBox>
+
+            <!-- Product Information Section -->
+            <VBox spacing="20.0">
+                <Label styleClass="section-title" text="Product Information" />
+
+                <VBox spacing="15.0">
+                    <VBox spacing="6.0">
+                        <Label styleClass="field-label" text="Product Name *" />
+                        <TextField fx:id="nameField" promptText="Enter product name" styleClass="text-field" />
+                    </VBox>
+
+                    <HBox spacing="15.0">
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label styleClass="field-label" text="Category *" />
+                            <TextField fx:id="categoryField" promptText="Enter product category" styleClass="text-field" />
+                        </VBox>
+
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label styleClass="field-label" text="Base Price *" />
+                            <TextField fx:id="basePriceField" promptText="Enter base price (e.g., 25000)" styleClass="text-field" />
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="6.0">
+                        <Label styleClass="field-label" text="Description" />
+                        <TextArea fx:id="descriptionArea" prefRowCount="3" promptText="Enter product description (optional)" styleClass="text-area" wrapText="true" />
+                    </VBox>
+
+                    <VBox spacing="6.0" />
+                </VBox>
+            </VBox>
+
+            <Separator />
+
+            <!-- Product Variation Section -->
+            <VBox spacing="20.0">
+                <Label styleClass="section-title" text="Product Variation" />
+
+                <VBox spacing="15.0" styleClass="variation-form">
+                    <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                    </padding>
+
+                    <Label styleClass="subsection-title" text="Update Variation Details" />
+
+                    <HBox spacing="15.0">
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label styleClass="field-label" text="Type *" />
+                            <TextField fx:id="variationTypeField" promptText="e.g., Size, Flavor" styleClass="text-field" />
+                        </VBox>
+
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label styleClass="field-label" text="Value *" />
+                            <TextField fx:id="variationValueField" promptText="e.g., Large, Chocolate" styleClass="text-field" />
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="15.0">
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label styleClass="field-label" text="Stock *" />
+                            <TextField fx:id="variationStockField" promptText="e.g., 50" styleClass="text-field" />
+                        </VBox>
+
+                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                            <Label styleClass="field-label" text="Additional Price" />
+                            <TextField fx:id="variationPriceField" promptText="e.g., 5000 (optional)" styleClass="text-field" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Action Buttons -->
+            <HBox alignment="CENTER" spacing="15.0">
+                <Button fx:id="saveButton" onAction="#handleSave" styleClass="primary-button" text="Update Product" />
+                <Button fx:id="cancelButton" onAction="#handleCancel" styleClass="secondary-button" text="Cancel" />
+            </HBox>
         </VBox>
-
-        <!-- Form Fields -->
-        <VBox spacing="20.0">
-            <VBox spacing="6.0">
-                <Label text="Product Name *" styleClass="field-label" />
-                <TextField fx:id="nameField" promptText="Enter product name" styleClass="text-field" />
-            </VBox>
-
-            <VBox spacing="6.0">
-                <Label text="Category *" styleClass="field-label" />
-                <TextField fx:id="categoryField" promptText="Enter product category" styleClass="text-field" />
-            </VBox>
-
-            <VBox spacing="6.0">
-                <Label text="Base Price *" styleClass="field-label" />
-                <TextField fx:id="basePriceField" promptText="Enter base price (e.g., 25000)" styleClass="text-field" />
-            </VBox>
-
-            <VBox spacing="6.0">
-                <Label text="Description" styleClass="field-label" />
-                <TextArea fx:id="descriptionArea" promptText="Enter product description (optional)" prefRowCount="3" styleClass="text-area" wrapText="true" />
-            </VBox>
-
-            <VBox spacing="6.0">
-                <Label text="Image URL" styleClass="field-label" />
-                <TextField fx:id="imageUrlField" promptText="Enter image URL (optional)" styleClass="text-field" />
-            </VBox>
-        </VBox>
-
-        <!-- Buttons -->
-        <HBox spacing="15.0" alignment="CENTER">
-            <Button fx:id="saveButton" text="Update Product" onAction="#handleSave" styleClass="primary-button" />
-            <Button fx:id="cancelButton" text="Cancel" onAction="#handleCancel" styleClass="secondary-button" />
-        </HBox>
-    </VBox>
+    </ScrollPane>
 </VBox>
